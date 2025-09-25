@@ -123,6 +123,7 @@ generic(
 -----------------------------
 	sys_led		:out std_logic;	---秒闪的系统指示灯
 	sys_rst_n	:out std_logic;
+	sys_locked	:out std_logic;
 	sys_clk_out1:out std_logic
  );
 end component;
@@ -232,9 +233,9 @@ generic(device_num:integer:=18);
 ----------------------------
     ad_channel_sta    :out std_logic_vector(35 downto 0);
 ---------------------------------
-    up_data_freq      :in std_logic_vector(31 downto 0);
+    -- up_data_freq      :in std_logic_vector(31 downto 0);
     ad_channel_en     :in std_logic_vector(35 downto 0);
-    work_mod          :in std_logic_vector(7 downto 0);
+    -- work_mod          :in std_logic_vector(7 downto 0);
     commom_sig        :in std_logic;
     cfg_data_en       :in std_logic;    
     trigger_sample_cmd:in std_logic;    
@@ -389,8 +390,8 @@ signal    rst_n_usb_pro          :std_logic;
 signal    fpga_check          :std_logic;
 signal	device_id	:std_logic_vector(57-1 downto 0);
 
-attribute mark_debug : string;
-attribute mark_debug of rxd: signal is "true";
+-- attribute mark_debug : string;
+-- attribute mark_debug of rxd: signal is "true";
 
 
 component pwr_manage is
@@ -430,6 +431,7 @@ generic(freq:integer:=50*10**6);
  );
 end component;
 
+signal sys_locked:std_logic;
 signal work_en:std_logic;
 signal time_s_vld:std_logic;
 
@@ -449,6 +451,7 @@ ins_clk_gen:bord_param port map(
     --------    =>	------------    	,
     sys_led		    =>	sys_led		    ,
     sys_rst_n	    =>	rst_n		    ,
+    sys_locked	    =>	sys_locked		,
     sys_clk_out1    =>	clkin
 );
 
@@ -466,7 +469,7 @@ generic map(
 port map(
   clkin					=>	clkin			        ,	
   rst_n			        =>	rst_n			        ,
-  cfg_data		        =>	uart_cfg_data		    ,
+  cfg_data		        =>	(others=>'0')		    ,
   cfg_vld			    =>	'0'         			,
   --------      =>	----------------                ,
   rxd				    =>	rxd				        ,
@@ -491,7 +494,7 @@ fx2_rst_n<=rst_n_usb;
 ins_fx2_drv:fx2_drv port map(
 
     clkin                      =>   clkin                     ,           
-    rst_n                      =>   rst_n                     ,
+    rst_n                      =>   sys_locked                ,
     m_axis_usb_rx_tdata        =>   m_axis_usb_rx_tdata       ,
     m_axis_usb_rx_tvalid       =>   m_axis_usb_rx_tvalid      ,
     s_axis_usb_tx_tdata        =>   s_axis_usb_tx_tdata       ,
@@ -524,9 +527,9 @@ ins_drv:drv_top port map(
     ---------------     =>  ---------------     ,
     ad_channel_sta     =>   ad_channel_sta      ,
     ------------------ =>   ------------------  ,
-    up_data_freq       =>   up_data_freq        ,
+    -- up_data_freq       =>   up_data_freq        ,
     ad_channel_en      =>   ad_channel_en       ,
-    work_mod           =>   work_mod            ,
+    -- work_mod           =>   work_mod            ,
     commom_sig         =>   commom_sig          ,
     cfg_data_en        =>   cfg_data_en         ,
     trigger_sample_cmd =>   trigger_sample_cmd  ,
@@ -566,7 +569,7 @@ ins_usb_pro_deal:usb_pro_deal port map(
     -------------------     =>  -------------------      ,
     ad_data_buf            =>   ad_data_buf              ,
     ad_data_buf_vld        =>   ad_data_buf_vld          ,
-    err_num                =>   err_num                  ,
+    err_num                =>   adc_spi_check            ,
     ad_channel_sta0        =>   ad_channel_sta           ,
     seq_ver                =>   seq_ver                  ,
     up_data_freq_o         =>   up_data_freq             ,
@@ -660,39 +663,40 @@ ins_pwrma:pwr_manage port map(
 
 
 
-ins_dna_rd:DNA_READ_TOP port map(
-    clkin           =>clkin         ,
-    rst_n           =>rst_n         ,
-    start_rd_en     =>'0'           ,
-    device_id       =>device_id     ,
-    fpga_check      =>fpga_check     
-);
+-- ins_dna_rd:DNA_READ_TOP port map(
+    -- clkin           =>clkin         ,
+    -- rst_n           =>rst_n         ,
+    -- start_rd_en     =>'0'           ,
+    -- device_id       =>device_id     ,
+    -- fpga_check      =>fpga_check     
+-- );
 
-ins_timer_gen:timer_gen port map(
-    clkin			    =>  clkin			    ,
-    rst_n			    =>  rst_n			    ,
-    ----------------    =>  ----------------    ,
-    time_s_vld          =>  time_s_vld          ,
-    s_out               =>  s_out               ,
-    m_out               =>  m_out               ,
-    h_out               =>  h_out               ,
-    d_out               =>  d_out           
-);
+-- ins_timer_gen:timer_gen port map(
+    -- clkin			    =>  clkin			    ,
+    -- rst_n			    =>  rst_n			    ,
+    --------------    =>  ----------------    ,
+    -- time_s_vld          =>  time_s_vld          ,
+    -- s_out               =>  s_out               ,
+    -- m_out               =>  m_out               ,
+    -- h_out               =>  h_out               ,
+    -- d_out               =>  d_out           
+-- );
 
-process(clkin,rst_n)
-begin
-    if rst_n='0' then
-        work_en<='1';
-    else
-        if rising_edge(clkin) then
-            if h_out<=3 and d_out=0 then
-                work_en<='1';
-            else
-                work_en<='0';
-            end if;
-        end if;
-    end if;
-end process;
+work_en<='1';
+-- process(clkin,rst_n)
+-- begin
+    -- if rst_n='0' then
+        -- work_en<='1';
+    -- else
+        -- if rising_edge(clkin) then
+            -- if h_out<=3 and d_out=0 then
+                -- work_en<='1';
+            -- else
+                -- work_en<='0';
+            -- end if;
+        -- end if;
+    -- end if;
+-- end process;
 
 
 

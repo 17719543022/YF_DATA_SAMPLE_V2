@@ -126,7 +126,7 @@ signal s_axis_tvalid_d1:std_logic;
 
 signal sync:std_logic;
 signal usb_rx_buf_vld:std_logic;
-type t1 is array(0 to 63) of std_logic_vector(7 downto 0);
+type t1 is array(0 to 39) of std_logic_vector(7 downto 0);
 signal usb_rx_buf:t1;
 signal usb_door_bell_buf:t1;
 type t2 is array(0 to 511) of std_logic_vector(7 downto 0);
@@ -176,21 +176,21 @@ signal ad_data_buf_r1: ad_buf_t:=(others=>X"010101");
 signal ad_data_buf_r2: ad_buf_t:=(others=>X"020202");
 signal ad_data_buf_r3: ad_buf_t:=(others=>X"030303");
 
-attribute mark_debug:string;
-attribute mark_debug of s_axis_tvalid  :signal is "true";
-attribute mark_debug of s_axis_tdata   :signal is "true";
-attribute mark_debug of m_axis_tvalid  :signal is "true";
-attribute mark_debug of m_axis_tready  :signal is "true";
-attribute mark_debug of m_axis_tdata   :signal is "true";
-attribute mark_debug of m_axis_tlast   :signal is "true";
+-- attribute mark_debug:string;
+-- attribute mark_debug of s_axis_tvalid  :signal is "true";
+-- attribute mark_debug of s_axis_tdata   :signal is "true";
+-- attribute mark_debug of m_axis_tvalid  :signal is "true";
+-- attribute mark_debug of m_axis_tready  :signal is "true";
+-- attribute mark_debug of m_axis_tdata   :signal is "true";
+-- attribute mark_debug of m_axis_tlast   :signal is "true";
 
-attribute mark_debug of usb_rx_buf_vld   :signal is "true";
-attribute mark_debug of usb_rx_buf_type  :signal is "true";
-attribute mark_debug of s2               :signal is "true";
-attribute mark_debug of cnt_tx           :signal is "true";
-attribute mark_debug of lock_data_en     :signal is "true";
-attribute mark_debug of door_bell_cmd    :signal is "true";
-attribute mark_debug of ad_data_buf_vld  :signal is "true";
+-- attribute mark_debug of usb_rx_buf_vld   :signal is "true";
+-- attribute mark_debug of usb_rx_buf_type  :signal is "true";
+-- attribute mark_debug of s2               :signal is "true";
+-- attribute mark_debug of cnt_tx           :signal is "true";
+-- attribute mark_debug of lock_data_en     :signal is "true";
+-- attribute mark_debug of door_bell_cmd    :signal is "true";
+-- attribute mark_debug of ad_data_buf_vld  :signal is "true";
 
 
 COMPONENT ila_0
@@ -338,6 +338,7 @@ signal    rst_n_ad_i      :std_logic;
 
 signal    pwr_send_data_en:std_logic;
 signal    usb_rx_buf_vld_locked:std_logic;
+constant resv1:std_logic_vector(35 downto 0):=(others=>'1');
 
 begin
 ---------------------数据接收-----------------------------------
@@ -721,23 +722,25 @@ lock_data_en_pos<=lock_data_en and not lock_data_en_d1;
 
 
 -----------------数据上传回复/自检回复------------------------------------------------------------------
-uut : ila_0
-PORT MAP (
-	clk    => clkin,
-	probe0 => adui_data,
-	probe1 => m1_adui_data_out,
-	probe2 => m2_adui_data_out,
-	probe3 => m3_adui_data_out,
-	probe4 => ad_data_buf(21),
-	probe5 => ad_data_buf_r1(21),
-	probe6 => ad_data_buf_vld
-);
+-- uut : ila_0
+-- PORT MAP (
+	-- clk    => clkin,
+	-- probe0 => adui_data,
+	-- probe1 => m1_adui_data_out,
+	-- probe2 => m2_adui_data_out,
+	-- probe3 => m3_adui_data_out,
+	-- probe4 => ad_data_buf(21),
+	-- probe5 => ad_data_buf_r1(21),
+	-- probe6 => ad_data_buf_vld
+-- );
 
 
 
 process(clkin,rst_n)
 begin
-    if rising_edge(clkin) then
+	if rst_n='0' then
+		usb_tx_buf<=(others=>X"00");
+    elsif rising_edge(clkin) then
         usb_tx_buf(0)<=X"AA";
         usb_tx_buf(1)<=X"55";
         usb_tx_buf(2)<=X"CD";
@@ -813,9 +816,11 @@ end process;
 
 -----------------查询消息准备------------------------------------------------
 ad_channel_sta<=ad_channel_sta3&ad_channel_sta2&ad_channel_sta1&ad_channel_sta0;
-process(clkin)
+process(clkin,rst_n)
 begin
-    if rising_edge(clkin) then
+	if rst_n='0' then
+		usb_door_bell_buf<=(others=>X"00");
+    elsif rising_edge(clkin) then
         usb_door_bell_buf(0)<=X"AA";
         usb_door_bell_buf(1)<=X"55";
         usb_door_bell_buf(2)<=X"CD";
@@ -830,7 +835,8 @@ begin
         -- for i in 0 to 17 loop
             -- usb_door_bell_buf(i+10)<=ad_channel_sta(i*8+7 downto i*8);          ----指的移位寄存器的状态（主机以及3个从机）
         -- end loop;
-        if   ad_channel_sta0(0)='1' then
+      --  if   ad_channel_sta0(0)='1' then
+        if   ad_channel_sta0=resv1 then           ---修改警告修改
             usb_door_bell_buf(10)<=X"00";
         else
             usb_door_bell_buf(10)<=X"01";
@@ -1053,7 +1059,9 @@ m3_adui_data_in<=adui_data;
 
 
 
-
+m1_adc_spi_inf_in<=(others=>'0');
+m2_adc_spi_inf_in<=(others=>'0');
+m3_adc_spi_inf_in<=(others=>'0');
 
 
 

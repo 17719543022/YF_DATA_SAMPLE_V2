@@ -155,7 +155,7 @@ begin
 			s1<=0;
 			rxd_temp_vld<='0';
 			rxd_temp<=(others=>'0');
-			rx_en<='0';
+			-- rx_en<='0';
 			cnt3:=0;
 		else
 			case s1 is
@@ -168,7 +168,7 @@ begin
 					cnt:=0;
 					cnt1:=0;
 					cnt2:=0;
-					rx_en<='0';
+					-- rx_en<='0';
 					cnt_pos<=(others=>'0');
 					cnt_neg<=(others=>'0');				
 					if cnt3>=baud_div_i&"0000" and rxd_temp_vld='1' then
@@ -245,9 +245,9 @@ begin
 						cnt_pos<=(others=>'0');
 						cnt_neg<=(others=>'0');
 						cnt:=0;
-						rx_en<='1';
+						-- rx_en<='1';
 					else
-						rx_en<='0';
+						-- rx_en<='0';
 						if rxd_i='1' then
 							cnt_pos<=cnt_pos+1;
 						else
@@ -260,7 +260,7 @@ begin
 					s1<=0;
 					rxd_temp_vld<='1';
 					cnt3:=0;
-					rx_en<='0';
+					-- rx_en<='0';
 				when others=>
 					s1<=0;
 			end case;

@@ -78,6 +78,7 @@ port(
 );
 end component;
 
+signal	ad_channel_en_n	:std_logic;
 signal	tx_en	:std_logic;
 signal	s_axis_tvalid	:std_logic;
 signal	s_axis_tready	: std_logic;
@@ -108,6 +109,9 @@ ins_spi:spi_master_sample port map(
     spi_sdo(0)			=>  spi_mosi		
 );
 
+
+
+ad_channel_en_n<='1' when ad_channel_en=X"ffff" else '0';
 process(clkin)
 begin
     if rising_edge(clkin) then
@@ -121,7 +125,8 @@ begin
             spi_tx_buf(6+i)<=up_freq(7+8*i downto 0+8*i);
         end loop;
 
-        spi_tx_buf(10)<=B"0000_000"&(not ad_channel_en(0));
+        -- spi_tx_buf(10)<=B"0000_000"&(not ad_channel_en(0));
+        spi_tx_buf(10)<=B"0000_000"&ad_channel_en_n;     ---减少警告修改
         spi_tx_buf(28)<=X"00";      ---从机
         spi_tx_buf(29)<=B"0000_00"&rst_n_ad_i&'0';      ---复位AD
         spi_tx_buf(39)<=X"a3";

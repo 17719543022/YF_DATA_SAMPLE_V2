@@ -86,7 +86,7 @@ signal s1:integer range 0 to 3;
 signal cnt_rx:integer range 0 to 1023;
 
 
-type t1 is array(0 to 63)of std_logic_vector(7 downto 0);
+type t1 is array(0 to 39)of std_logic_vector(7 downto 0);
 signal spi_rx_buf:t1;
 
 
@@ -129,6 +129,7 @@ begin
         s1<=0;
         cnt_rx<=0;
         spi_rx_buf_vld<='0';
+		spi_rx_buf<=(others=>X"00");
     elsif rising_edge(clkin) then
         case s1 is
             when 0=>

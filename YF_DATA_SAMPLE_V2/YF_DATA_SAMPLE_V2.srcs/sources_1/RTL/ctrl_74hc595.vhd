@@ -97,7 +97,7 @@ begin
                 
                 when 1=>
                     if cnt0=clk_div-1 then
-                        ds<=s_axis_tdata(device_num*8-1-cnt_tx);
+                        ds<=tx_data(device_num*8-1-cnt_tx);
                         cnt_tx<=cnt_tx+1;
                         s1<=2;
                     end if;
@@ -105,7 +105,7 @@ begin
                     
                 when 2=>
                     if cnt0=clk_div-1 then
-                        ds<=s_axis_tdata(device_num*8-1-cnt_tx);
+                        ds<=tx_data(device_num*8-1-cnt_tx);
                         cnt_tx<=cnt_tx+1;
                     end if;
                  

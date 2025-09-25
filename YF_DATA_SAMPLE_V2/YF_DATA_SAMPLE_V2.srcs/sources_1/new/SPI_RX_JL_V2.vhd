@@ -172,6 +172,8 @@ begin
                     else
                         s1<=s1;
                     end if;
+					spi_rx_buf(0)<=X"55";
+					spi_rx_buf(1)<=X"aa";
                     cnt_rx<=0;
                     spi_rx_buf_vld<='0';
                     

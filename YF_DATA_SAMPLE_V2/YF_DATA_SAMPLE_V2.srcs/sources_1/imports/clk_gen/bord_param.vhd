@@ -73,6 +73,7 @@ generic(
 ---------------------------------
 	sys_led		:out std_logic;	---秒闪的系统指示灯
 	sys_rst_n	:out std_logic;
+	sys_locked	:out std_logic;
 	sys_clk_out1:out std_logic
  );
 end bord_param;
@@ -102,6 +103,7 @@ signal		rst_n_s2			:  STD_LOGIC:='0' ;
 
 begin
 
+sys_locked<=locked;
 
 clkgen : clk_wiz_0
    port map ( 

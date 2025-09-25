@@ -458,8 +458,8 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 	bufferOutput[3] = 0xCD;
 	bufferOutput[4] = 0x10;
 	bufferOutput[5] = 0x50;
-	bufferOutput[6] = 0xA8;
-	bufferOutput[7] = 0x61;
+	bufferOutput[6] = 0x50;
+	bufferOutput[7] = 0xC3;
 	bufferOutput[8] = 0x00;
 	bufferOutput[9] = 0x00;
 	bufferOutput[10] = 0x01;
@@ -481,7 +481,7 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 	bufferOutput[26] = 0x00;
 	bufferOutput[27] = 0x00;
 	bufferOutput[28] = 0x00;
-	bufferOutput[29] = 0x02;
+	bufferOutput[29] = 0x03;
 	bufferOutput[30] = 0x00;
 	bufferOutput[31] = 0x00;
 	bufferOutput[32] = 0x00;
@@ -544,7 +544,7 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 		if ((fp == NULL) && (pThis->m_bButtonADCSampleClicked == TRUE))
 		{
 			char fileName[60] = { 0 };
-			fp = fopen("D:/data.txt", "w");
+			fp = fopen("../samples/data.txt", "w");
 		}
 
 		long readLength = totalTransferSize;
