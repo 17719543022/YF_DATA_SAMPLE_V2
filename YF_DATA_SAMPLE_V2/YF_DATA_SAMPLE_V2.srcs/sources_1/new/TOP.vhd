@@ -39,8 +39,7 @@ entity TOP is
     clk                     :in std_logic;
 	rxd				        :in std_logic;
 	txd				        :out std_logic;
-	sys_led1		        :out std_logic;
-    sys_led2		        :out std_logic;
+	sys_led			        :out std_logic;
 ----------------------------------------
     fx2_fdata               :inout std_logic_vector(15 downto 0);          --FX2型USB2.0芯片的SlaveFIFO的数据线
     fx2_flagb               :in std_logic;                                 --FX2型USB2.0芯片的端点2空标志   0=>空  1=>非空 说明usb接收到数据
@@ -122,8 +121,7 @@ generic(
 ------------------------------	
 	soft_rst_n	:in std_logic;
 -----------------------------
-	sys_led1	:out std_logic;	---秒闪的系统指示灯
-    sys_led2	:out std_logic;
+	sys_led		:out std_logic;	---秒闪的系统指示灯
 	sys_rst_n	:out std_logic;
 	sys_locked	:out std_logic;
 	sys_clk_out1:out std_logic
@@ -451,8 +449,7 @@ ins_clk_gen:bord_param port map(
     --------    =>	------------    	,
     soft_rst_n	    =>	'1'	            ,
     --------    =>	------------    	,
-    sys_led1	    =>	sys_led1	    ,
-    sys_led2	    =>	sys_led2	    ,
+    sys_led		    =>	sys_led		    ,
     sys_rst_n	    =>	rst_n		    ,
     sys_locked	    =>	sys_locked		,
     sys_clk_out1    =>	clkin

@@ -159,6 +159,22 @@ X"00"
 );
 
 
+-----------debug signal ----------------------------------------
+attribute mark_debug : string;
+attribute mark_debug of factor_num: signal is "true";
+attribute mark_debug of factor_num_vld: signal is "true";
+attribute mark_debug of rx_buf_vld   : signal is "true";
+attribute mark_debug of s_axis_uart_tvalid: signal is "true";
+attribute mark_debug of s_axis_uart_tdata: signal is "true";
+
+
+-- COMPONENT vio_0
+  -- PORT (
+    -- clk : IN STD_LOGIC;
+    -- probe_out0 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0)
+  -- );
+-- END COMPONENT;
+
 begin
 
 process(clkin,rst_n)

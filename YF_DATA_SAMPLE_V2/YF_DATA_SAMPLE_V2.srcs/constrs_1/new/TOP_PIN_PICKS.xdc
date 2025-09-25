@@ -61,15 +61,13 @@ set_property IOSTANDARD LVCMOS33 [get_ports fx2_sloe]
 set_property IOSTANDARD LVCMOS33 [get_ports fx2_slrd]
 set_property IOSTANDARD LVCMOS33 [get_ports fx2_slwr]
 set_property IOSTANDARD LVCMOS33 [get_ports rxd]
-set_property IOSTANDARD LVCMOS33 [get_ports sys_led1]
-set_property IOSTANDARD LVCMOS33 [get_ports sys_led2]
+set_property IOSTANDARD LVCMOS33 [get_ports sys_led]
 set_property IOSTANDARD LVCMOS33 [get_ports txd]
 set_property IOSTANDARD LVCMOS33 [get_ports fx2_rst_n]
 set_property PACKAGE_PIN Y18 [get_ports clk]
 set_property PACKAGE_PIN AA5 [get_ports txd]
 set_property PACKAGE_PIN AA4 [get_ports rxd]
-set_property PACKAGE_PIN N17 [get_ports sys_led1]
-set_property PACKAGE_PIN P15 [get_ports sys_led2]
+set_property PACKAGE_PIN N17 [get_ports sys_led]
 set_property PACKAGE_PIN C15 [get_ports fx2_rst_n]
 
 
@@ -130,6 +128,15 @@ set_property PACKAGE_PIN R4 [get_ports sr_rclk]
 set_property PACKAGE_PIN W1 [get_ports sr_ser]
 set_property PACKAGE_PIN U1 [get_ports sr_srclk]
 set_property PACKAGE_PIN U2 [get_ports sr_srclr]
+
+set_property MARK_DEBUG true [get_nets ins_drv/clkin]
+
+
+
+
+
+
+
 
 
 set_property PACKAGE_PIN V19 [get_ports at24lc64_scl]

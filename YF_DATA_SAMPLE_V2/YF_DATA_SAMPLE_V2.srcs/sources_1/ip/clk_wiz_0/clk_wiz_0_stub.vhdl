@@ -1,10 +1,10 @@
 -- Copyright 1986-2017 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2017.4 (win64) Build 2086221 Fri Dec 15 20:55:39 MST 2017
--- Date        : Tue Jul 30 20:42:36 2024
--- Host        : SB-BJB-003 running 64-bit major release  (build 9200)
+-- Date        : Thu Sep 25 17:03:08 2025
+-- Host        : DESKTOP-CPY5ST2 running 64-bit major release  (build 9200)
 -- Command     : write_vhdl -force -mode synth_stub
---               D:/huhao/VIVADO_PRJ/YF_DATA_SAMPLE/YF_DATA_SAMPLE.srcs/sources_1/ip/clk_wiz_0/clk_wiz_0_stub.vhdl
+--               E:/Vivado2017.4/YF_DATA_SAMPLE_V2/YF_DATA_SAMPLE_V2/YF_DATA_SAMPLE_V2.srcs/sources_1/ip/clk_wiz_0/clk_wiz_0_stub.vhdl
 -- Design      : clk_wiz_0
 -- Purpose     : Stub declaration of top-level module interface
 -- Device      : xc7a75tfgg484-2
