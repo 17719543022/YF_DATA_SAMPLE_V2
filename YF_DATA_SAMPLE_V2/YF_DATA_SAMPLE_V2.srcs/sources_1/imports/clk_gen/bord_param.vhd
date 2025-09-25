@@ -17,37 +17,8 @@
 -- Additional Comments:
 -- 
 ----------------------------------------------------------------------------------
---------------------------------------------------------------
-----------------*******************--------------------------------------
--- component bord_param is
--- generic(
-	-- sys_clk_freq:integer:=50*10**6
--- );
- -- Port (
-	-- clkin		:in std_logic;
-	-- hard_rst_n	:in std_logic;
---------------------------------	
-	-- soft_rst_n	:in std_logic;
--------------------------------
-	-- sys_led		:out std_logic;	---秒闪的系统指示灯
-	-- sys_rst_n	:out std_logic;
-	-- sys_clk_out1:out std_logic
- -- );
--- end component;
 
 
--- ins_clk_gen:bord_param port map(
-
-	-- clkin			=>	clkin			,
-    -- hard_rst_n	    =>	hard_rst_n	    ,
-    ----------    =>	------------    	,
-    -- soft_rst_n	    =>	soft_rst_n	    ,
-    ----------    =>	------------    	,
-    -- sys_led		    =>	sys_led		    ,
-    -- sys_rst_n	    =>	rst_n		    ,
-    -- sys_clk_out1    =>	clkin
--- );
-----------------*******************--------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use ieee.std_logic_unsigned.all;
@@ -71,7 +42,8 @@ generic(
 ----------------------------------	
 	soft_rst_n	:in std_logic;
 ---------------------------------
-	sys_led		:out std_logic;	---秒闪的系统指示灯
+	sys_led1	:out std_logic;	---秒闪的系统指示灯
+    sys_led2	:out std_logic;
 	sys_rst_n	:out std_logic;
 	sys_locked	:out std_logic;
 	sys_clk_out1:out std_logic
@@ -96,7 +68,8 @@ signal		clk_out1			:  STD_LOGIC:='0' ;
 signal		clk16m				:  STD_LOGIC:='0' ;
 signal		locked				:  STD_LOGIC:='0' ;
 signal		rst_n_s1			:  STD_LOGIC:='0' ;
-signal		sys_led_buf			:  STD_LOGIC:='0' ;
+signal		sys_led_buf1		:  STD_LOGIC:='0' ;
+signal		sys_led_buf2		:  STD_LOGIC:='0' ;
 signal		rst_n_s2			:  STD_LOGIC:='0' ;
 
 
@@ -151,19 +124,23 @@ begin
 end process;
 
 
-sys_led<=sys_led_buf;
+sys_led1<=sys_led_buf1;
+sys_led2<=sys_led_buf2;
+
 
 process(clk_out1,rst_n_s2)
 variable cnt:integer:=0;
 begin
 	if rst_n_s2='0' then
-		sys_led_buf<='0';
+		sys_led_buf1<='0';
+        sys_led_buf2<='0';
 		cnt:=0;
 	else
 		if rising_edge(clk_out1) then
 			if cnt>=(sys_clk_freq/2-1) then
 				cnt:=0;
-				sys_led_buf<=not sys_led_buf;
+				sys_led_buf1<=not sys_led_buf1;
+				sys_led_buf2<=not sys_led_buf2;
 			else
 				cnt:=cnt+1;
 			end if;
