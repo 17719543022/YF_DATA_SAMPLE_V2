@@ -45,8 +45,8 @@ generic(device_num:integer:=18);
     sync_n          :out std_logic;
     audi_in         :in std_logic;
     adc_check_sus   :out std_logic_vector(device_num-1 downto 0);
-    -- sample_time_num :in std_logic_vector(31 downto 0);
-    -- work_mod        :in std_logic_vector(7 downto 0);
+    sample_time_num :in std_logic_vector(31 downto 0);
+    work_mod        :in std_logic_vector(7 downto 0);
     sample_start    :in std_logic;
 ----------------------------
     ad_data_buf     :out ad_buf_t;
@@ -126,7 +126,7 @@ constant data_reg:std_logic_vector(7 downto 0):=X"04";
 
 signal	sample_en		: std_logic;	
 -- signal	adc_check_sus   : std_logic_vector(device_num-1 downto 0);	
--- signal	ad_cfg_over		: std_logic;	
+signal	ad_cfg_over		: std_logic;	
 signal	data_lock		: std_logic;	
 signal	check_data_n		: std_logic;	
 signal	spi_cs_i		: std_logic;	
@@ -146,14 +146,14 @@ signal	rx_ad_data_temp_vld		: std_logic;
 signal	ad_data_buf_vld_i		: std_logic;	
 
 
--- attribute mark_debug:string;
--- attribute mark_debug of spi_mosi:signal is "true";
--- attribute mark_debug of spi_cs_i:signal is "true";
--- attribute mark_debug of spi_clk	:signal is "true";
--- attribute mark_debug of spi_miso:signal is "true";
--- attribute mark_debug of spi_rd_vld        :signal is "true";
--- attribute mark_debug of spi_rd_data       :signal is "true";
--- attribute mark_debug of s1                :signal is "true";
+attribute mark_debug:string;
+attribute mark_debug of spi_mosi:signal is "true";
+attribute mark_debug of spi_cs_i:signal is "true";
+attribute mark_debug of spi_clk	:signal is "true";
+attribute mark_debug of spi_miso:signal is "true";
+attribute mark_debug of spi_rd_vld        :signal is "true";
+attribute mark_debug of spi_rd_data       :signal is "true";
+attribute mark_debug of s1                :signal is "true";
 
 
 begin
@@ -189,7 +189,7 @@ begin
          s1<=0;
          adc_check_sus<=(others=>'0');
          err_num<=(others=>'0');
-         -- ad_cfg_over<='0';
+         ad_cfg_over<='0';
          sync_n<='1';
          s_axis_trst<='0';
          cnt:=0;
@@ -328,7 +328,7 @@ begin
                     s_axis_tnum<=conv_std_logic_vector(24,16);
                     s_axis_tdata<=X"11_8043"&resv_data(15 downto 0); --使能data_stat模式 24位转换结果    
                     s_axis_tuser<=spi_wr_cmd;  
-                    -- ad_cfg_over<='1';
+                    ad_cfg_over<='1';
                     if s_axis_tvalid='1' and s_axis_tready='1' then
                         s1<=13;
                         s_axis_tvalid<='0';
@@ -379,7 +379,7 @@ begin
                     rx_num<=0;
 -------------------------------------------------------------------
                 when 6=>
-                    -- ad_cfg_over<='1';
+                    ad_cfg_over<='1';
                     sync_n<='1';
                     check_data_n<='0';
                     cnt:=0;

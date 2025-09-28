@@ -219,7 +219,7 @@ begin
 					cnt_tx		<=0;
 					addr_tx_over<='0';
 					rx_data_temp_vld<=(others=>'0');
-					-- tx_data_over<='0';
+					tx_data_over<='0';
 					cnt_rx			<=0;
 				when 1=>
 					cs_buf<='0';

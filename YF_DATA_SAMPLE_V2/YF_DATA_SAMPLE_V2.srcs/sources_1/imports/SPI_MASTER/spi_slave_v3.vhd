@@ -93,7 +93,7 @@ begin
 		spi_clk_d2<='0';
 		spi_sdi_d0<='0';
 		spi_sdi_d1<='0';
-		-- spi_sdi_d2<='0';
+		spi_sdi_d2<='0';
 	elsif rising_edge(clkin) then
 		spi_cs_d0	<=spi_cs;
 		spi_cs_d1	<=spi_cs_d0;
@@ -103,7 +103,7 @@ begin
 		spi_sdi_d1	<=spi_sdi_d0;
 		spi_cs_d2	<=spi_cs_d1;
 		spi_clk_d2	<=spi_clk_d1;
-		-- spi_sdi_d2	<=spi_sdi_d1;		
+		spi_sdi_d2	<=spi_sdi_d1;		
 	end if;
 end process;
 

@@ -67,7 +67,7 @@ set_property IOSTANDARD LVCMOS33 [get_ports fx2_rst_n]
 set_property PACKAGE_PIN Y18 [get_ports clk]
 set_property PACKAGE_PIN AA5 [get_ports txd]
 set_property PACKAGE_PIN AA4 [get_ports rxd]
-set_property PACKAGE_PIN N17 [get_ports sys_led]
+set_property PACKAGE_PIN P16 [get_ports sys_led]
 set_property PACKAGE_PIN C15 [get_ports fx2_rst_n]
 
 
@@ -249,6 +249,96 @@ set_property PACKAGE_PIN F13 [get_ports ads1110_scl]
 
 
 
+create_debug_core u_ila_0 ila
+set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0]
+set_property ALL_PROBE_SAME_MU_CNT 4 [get_debug_cores u_ila_0]
+set_property C_ADV_TRIGGER true [get_debug_cores u_ila_0]
+set_property C_DATA_DEPTH 8192 [get_debug_cores u_ila_0]
+set_property C_EN_STRG_QUAL true [get_debug_cores u_ila_0]
+set_property C_INPUT_PIPE_STAGES 0 [get_debug_cores u_ila_0]
+set_property C_TRIGIN_EN false [get_debug_cores u_ila_0]
+set_property C_TRIGOUT_EN false [get_debug_cores u_ila_0]
+set_property port_width 1 [get_debug_ports u_ila_0/clk]
+connect_debug_port u_ila_0/clk [get_nets [list ins_clk_gen/clkgen/inst/clk_out1]]
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe0]
+set_property port_width 11 [get_debug_ports u_ila_0/probe0]
+connect_debug_port u_ila_0/probe0 [get_nets [list {ins_usb_pro_deal/cnt_tx[0]} {ins_usb_pro_deal/cnt_tx[1]} {ins_usb_pro_deal/cnt_tx[2]} {ins_usb_pro_deal/cnt_tx[3]} {ins_usb_pro_deal/cnt_tx[4]} {ins_usb_pro_deal/cnt_tx[5]} {ins_usb_pro_deal/cnt_tx[6]} {ins_usb_pro_deal/cnt_tx[7]} {ins_usb_pro_deal/cnt_tx[8]} {ins_usb_pro_deal/cnt_tx[9]} {ins_usb_pro_deal/cnt_tx[10]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe1]
+set_property port_width 16 [get_debug_ports u_ila_0/probe1]
+connect_debug_port u_ila_0/probe1 [get_nets [list {ins_usb_pro_deal/s_axis_tdata[0]} {ins_usb_pro_deal/s_axis_tdata[1]} {ins_usb_pro_deal/s_axis_tdata[2]} {ins_usb_pro_deal/s_axis_tdata[3]} {ins_usb_pro_deal/s_axis_tdata[4]} {ins_usb_pro_deal/s_axis_tdata[5]} {ins_usb_pro_deal/s_axis_tdata[6]} {ins_usb_pro_deal/s_axis_tdata[7]} {ins_usb_pro_deal/s_axis_tdata[8]} {ins_usb_pro_deal/s_axis_tdata[9]} {ins_usb_pro_deal/s_axis_tdata[10]} {ins_usb_pro_deal/s_axis_tdata[11]} {ins_usb_pro_deal/s_axis_tdata[12]} {ins_usb_pro_deal/s_axis_tdata[13]} {ins_usb_pro_deal/s_axis_tdata[14]} {ins_usb_pro_deal/s_axis_tdata[15]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe2]
+set_property port_width 8 [get_debug_ports u_ila_0/probe2]
+connect_debug_port u_ila_0/probe2 [get_nets [list {ins_usb_pro_deal/usb_rx_buf_type[0]} {ins_usb_pro_deal/usb_rx_buf_type[1]} {ins_usb_pro_deal/usb_rx_buf_type[2]} {ins_usb_pro_deal/usb_rx_buf_type[3]} {ins_usb_pro_deal/usb_rx_buf_type[4]} {ins_usb_pro_deal/usb_rx_buf_type[5]} {ins_usb_pro_deal/usb_rx_buf_type[6]} {ins_usb_pro_deal/usb_rx_buf_type[7]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe3]
+set_property port_width 3 [get_debug_ports u_ila_0/probe3]
+connect_debug_port u_ila_0/probe3 [get_nets [list {ins_usb_pro_deal/s2[0]} {ins_usb_pro_deal/s2[1]} {ins_usb_pro_deal/s2[2]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe4]
+set_property port_width 16 [get_debug_ports u_ila_0/probe4]
+connect_debug_port u_ila_0/probe4 [get_nets [list {ins_usb_pro_deal/m_axis_tdata[0]} {ins_usb_pro_deal/m_axis_tdata[1]} {ins_usb_pro_deal/m_axis_tdata[2]} {ins_usb_pro_deal/m_axis_tdata[3]} {ins_usb_pro_deal/m_axis_tdata[4]} {ins_usb_pro_deal/m_axis_tdata[5]} {ins_usb_pro_deal/m_axis_tdata[6]} {ins_usb_pro_deal/m_axis_tdata[7]} {ins_usb_pro_deal/m_axis_tdata[8]} {ins_usb_pro_deal/m_axis_tdata[9]} {ins_usb_pro_deal/m_axis_tdata[10]} {ins_usb_pro_deal/m_axis_tdata[11]} {ins_usb_pro_deal/m_axis_tdata[12]} {ins_usb_pro_deal/m_axis_tdata[13]} {ins_usb_pro_deal/m_axis_tdata[14]} {ins_usb_pro_deal/m_axis_tdata[15]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe5]
+set_property port_width 48 [get_debug_ports u_ila_0/probe5]
+connect_debug_port u_ila_0/probe5 [get_nets [list {ins_eeprom/factor_num[0]} {ins_eeprom/factor_num[1]} {ins_eeprom/factor_num[2]} {ins_eeprom/factor_num[3]} {ins_eeprom/factor_num[4]} {ins_eeprom/factor_num[5]} {ins_eeprom/factor_num[6]} {ins_eeprom/factor_num[7]} {ins_eeprom/factor_num[8]} {ins_eeprom/factor_num[9]} {ins_eeprom/factor_num[10]} {ins_eeprom/factor_num[11]} {ins_eeprom/factor_num[12]} {ins_eeprom/factor_num[13]} {ins_eeprom/factor_num[14]} {ins_eeprom/factor_num[15]} {ins_eeprom/factor_num[16]} {ins_eeprom/factor_num[17]} {ins_eeprom/factor_num[18]} {ins_eeprom/factor_num[19]} {ins_eeprom/factor_num[20]} {ins_eeprom/factor_num[21]} {ins_eeprom/factor_num[22]} {ins_eeprom/factor_num[23]} {ins_eeprom/factor_num[24]} {ins_eeprom/factor_num[25]} {ins_eeprom/factor_num[26]} {ins_eeprom/factor_num[27]} {ins_eeprom/factor_num[28]} {ins_eeprom/factor_num[29]} {ins_eeprom/factor_num[30]} {ins_eeprom/factor_num[31]} {ins_eeprom/factor_num[32]} {ins_eeprom/factor_num[33]} {ins_eeprom/factor_num[34]} {ins_eeprom/factor_num[35]} {ins_eeprom/factor_num[36]} {ins_eeprom/factor_num[37]} {ins_eeprom/factor_num[38]} {ins_eeprom/factor_num[39]} {ins_eeprom/factor_num[40]} {ins_eeprom/factor_num[41]} {ins_eeprom/factor_num[42]} {ins_eeprom/factor_num[43]} {ins_eeprom/factor_num[44]} {ins_eeprom/factor_num[45]} {ins_eeprom/factor_num[46]} {ins_eeprom/factor_num[47]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe6]
+set_property port_width 4 [get_debug_ports u_ila_0/probe6]
+connect_debug_port u_ila_0/probe6 [get_nets [list {ins_drv/ins_ad_drv/s1[0]} {ins_drv/ins_ad_drv/s1[1]} {ins_drv/ins_ad_drv/s1[2]} {ins_drv/ins_ad_drv/s1[3]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe7]
+set_property port_width 18 [get_debug_ports u_ila_0/probe7]
+connect_debug_port u_ila_0/probe7 [get_nets [list {ins_drv/ins_ad_drv/spi_miso[0]} {ins_drv/ins_ad_drv/spi_miso[1]} {ins_drv/ins_ad_drv/spi_miso[2]} {ins_drv/ins_ad_drv/spi_miso[3]} {ins_drv/ins_ad_drv/spi_miso[4]} {ins_drv/ins_ad_drv/spi_miso[5]} {ins_drv/ins_ad_drv/spi_miso[6]} {ins_drv/ins_ad_drv/spi_miso[7]} {ins_drv/ins_ad_drv/spi_miso[8]} {ins_drv/ins_ad_drv/spi_miso[9]} {ins_drv/ins_ad_drv/spi_miso[10]} {ins_drv/ins_ad_drv/spi_miso[11]} {ins_drv/ins_ad_drv/spi_miso[12]} {ins_drv/ins_ad_drv/spi_miso[13]} {ins_drv/ins_ad_drv/spi_miso[14]} {ins_drv/ins_ad_drv/spi_miso[15]} {ins_drv/ins_ad_drv/spi_miso[16]} {ins_drv/ins_ad_drv/spi_miso[17]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe8]
+set_property port_width 1 [get_debug_ports u_ila_0/probe8]
+connect_debug_port u_ila_0/probe8 [get_nets [list ins_usb_pro_deal/ad_data_buf_vld]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe9]
+set_property port_width 1 [get_debug_ports u_ila_0/probe9]
+connect_debug_port u_ila_0/probe9 [get_nets [list ins_usb_pro_deal/door_bell_cmd]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe10]
+set_property port_width 1 [get_debug_ports u_ila_0/probe10]
+connect_debug_port u_ila_0/probe10 [get_nets [list ins_eeprom/factor_num_vld]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe11]
+set_property port_width 1 [get_debug_ports u_ila_0/probe11]
+connect_debug_port u_ila_0/probe11 [get_nets [list ins_usb_pro_deal/lock_data_en]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe12]
+set_property port_width 1 [get_debug_ports u_ila_0/probe12]
+connect_debug_port u_ila_0/probe12 [get_nets [list ins_usb_pro_deal/m_axis_tlast]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe13]
+set_property port_width 1 [get_debug_ports u_ila_0/probe13]
+connect_debug_port u_ila_0/probe13 [get_nets [list ins_usb_pro_deal/m_axis_tvalid]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe14]
+set_property port_width 1 [get_debug_ports u_ila_0/probe14]
+connect_debug_port u_ila_0/probe14 [get_nets [list ins_usb_pro_deal/s_axis_tvalid]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe15]
+set_property port_width 1 [get_debug_ports u_ila_0/probe15]
+connect_debug_port u_ila_0/probe15 [get_nets [list ins_drv/ins_ad_drv/spi_clk]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe16]
+set_property port_width 1 [get_debug_ports u_ila_0/probe16]
+connect_debug_port u_ila_0/probe16 [get_nets [list ins_drv/ins_ad_drv/spi_cs_i]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe17]
+set_property port_width 1 [get_debug_ports u_ila_0/probe17]
+connect_debug_port u_ila_0/probe17 [get_nets [list ins_drv/ins_ad_drv/spi_mosi]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe18]
+set_property port_width 1 [get_debug_ports u_ila_0/probe18]
+connect_debug_port u_ila_0/probe18 [get_nets [list ins_drv/ins_ad_drv/spi_rd_vld]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe19]
+set_property port_width 1 [get_debug_ports u_ila_0/probe19]
+connect_debug_port u_ila_0/probe19 [get_nets [list ins_usb_pro_deal/usb_rx_buf_vld]]
 
 
 
@@ -260,4 +350,21 @@ set_clock_groups -asynchronous -group [get_clocks clk] -group [get_clocks usb_cl
 set_input_delay -clock [get_clocks usb_clk] 2.000 [get_ports {fx2_flagb fx2_flagc fx2_ifclk}]
 set_input_delay -clock [get_clocks usb_clk] 2.000 [get_ports {{fx2_fdata[0]} {fx2_fdata[1]} {fx2_fdata[2]} {fx2_fdata[3]} {fx2_fdata[4]} {fx2_fdata[5]} {fx2_fdata[6]} {fx2_fdata[7]} {fx2_fdata[8]} {fx2_fdata[9]} {fx2_fdata[10]} {fx2_fdata[11]} {fx2_fdata[12]} {fx2_fdata[13]} {fx2_fdata[14]} {fx2_fdata[15]}}]
 
-
+create_debug_core u_ila_6 ila
+set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_6]
+set_property ALL_PROBE_SAME_MU_CNT 3 [get_debug_cores u_ila_6]
+set_property C_ADV_TRIGGER true [get_debug_cores u_ila_6]
+set_property C_DATA_DEPTH 1024 [get_debug_cores u_ila_6]
+set_property C_EN_STRG_QUAL true [get_debug_cores u_ila_6]
+set_property C_INPUT_PIPE_STAGES 2 [get_debug_cores u_ila_6]
+set_property C_TRIGIN_EN false [get_debug_cores u_ila_6]
+set_property C_TRIGOUT_EN false [get_debug_cores u_ila_6]
+set_property port_width 1 [get_debug_ports u_ila_6/clk]
+connect_debug_port u_ila_6/clk [get_nets [list ins_eeprom/clkin]]
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_6/probe0]
+set_property port_width 12 [get_debug_ports u_ila_6/probe0]
+connect_debug_port u_ila_6/probe0 [get_nets [list ins_eeprom/s_axis_uart_tvalid ins_eeprom/rx_buf_vld ins_usb_pro_deal/m_axis_tready rxd_IBUF {ins_eeprom/s_axis_uart_tdata[0]} {ins_eeprom/s_axis_uart_tdata[1]} {ins_eeprom/s_axis_uart_tdata[2]} {ins_eeprom/s_axis_uart_tdata[3]} {ins_eeprom/s_axis_uart_tdata[4]} {ins_eeprom/s_axis_uart_tdata[5]} {ins_eeprom/s_axis_uart_tdata[6]} {ins_eeprom/s_axis_uart_tdata[7]}]]
+set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
+set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
+set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
+connect_debug_port dbg_hub/clk [get_nets clkin]

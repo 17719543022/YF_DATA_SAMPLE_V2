@@ -114,7 +114,7 @@ begin
 						s1<=s1;
 					end if;
 					cs<='1';
-					-- spi_working<='0';
+					spi_working<='0';
 					cnt:=0;
                     cnt_spi_clk <= 0;
 				
@@ -154,7 +154,7 @@ begin
 					if cnt_spi_clk = 0 then
 						cs<='1';
 						s1<=3;
-						-- spi_working<='0';
+						spi_working<='0';
 					else
 						s1<=s1;
 					end if;

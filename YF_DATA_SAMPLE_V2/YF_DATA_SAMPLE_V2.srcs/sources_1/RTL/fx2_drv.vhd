@@ -148,7 +148,7 @@ process(fx2_ifclk)
 begin
     if rising_edge(fx2_ifclk) then
         fx2_flagb_d1<=fx2_flagb;
-        -- fx2_flagb_d2<=fx2_flagb_d1;
+        fx2_flagb_d2<=fx2_flagb_d1;
         if  s1=3 and fx2_flagb='1' and fx2_flagb_d1='1' then
             usb_rx_data<=fx2_fdata;
             usb_rx_vld <='1';

@@ -245,18 +245,16 @@ begin
         charge_c<='0';
         charge_p<='0';     
     else
-		if rising_edge(clkin) then
-			if STAT1='0' and STAT2='1' then
-				charge_p<='1';
-				charge_c<='0';
-			elsif STAT1='1' and STAT2='0' then
-				charge_c<='1';
-				charge_p<='0';
-			else
-				charge_c<='0';
-				charge_p<='0';  
-			end if;
-		end if;
+        if STAT1='0' and STAT2='1' then
+            charge_p<='1';
+            charge_c<='0';
+        elsif STAT1='1' and STAT2='0' then
+            charge_c<='1';
+            charge_p<='0';
+        else
+            charge_c<='0';
+            charge_p<='0';  
+        end if;
     end if;
 end process;
 -------------led¿ØÖÆ--------------------------------------

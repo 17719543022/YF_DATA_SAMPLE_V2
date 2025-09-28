@@ -1,10 +1,10 @@
 -- Copyright 1986-2017 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2017.4 (win64) Build 2086221 Fri Dec 15 20:55:39 MST 2017
--- Date        : Thu Sep 25 17:03:08 2025
--- Host        : DESKTOP-CPY5ST2 running 64-bit major release  (build 9200)
+-- Date        : Tue Jul 30 20:42:36 2024
+-- Host        : SB-BJB-003 running 64-bit major release  (build 9200)
 -- Command     : write_vhdl -force -mode funcsim
---               E:/Vivado2017.4/YF_DATA_SAMPLE_V2/YF_DATA_SAMPLE_V2/YF_DATA_SAMPLE_V2.srcs/sources_1/ip/clk_wiz_0/clk_wiz_0_sim_netlist.vhdl
+--               D:/huhao/VIVADO_PRJ/YF_DATA_SAMPLE/YF_DATA_SAMPLE.srcs/sources_1/ip/clk_wiz_0/clk_wiz_0_sim_netlist.vhdl
 -- Design      : clk_wiz_0
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
