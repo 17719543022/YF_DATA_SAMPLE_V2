@@ -316,6 +316,7 @@ signal    m3_ad_data_buf_o_vld   :std_logic;
 
 
 
+signal    m0_num:std_logic_vector(7 downto 0); --18导联36导联切换专用
 signal    m1_num:std_logic_vector(7 downto 0);
 signal    m2_num:std_logic_vector(7 downto 0);
 signal    m3_num:std_logic_vector(7 downto 0);
@@ -441,6 +442,7 @@ begin
         work_mod_i<=X"51";            ----问询上传
         up_data_freq<=conv_std_logic_vector(ini_sample_rate,32); 
         ad_channel_en<=(others=>'0');
+        m0_num<=X"24";
         master_en<='0';                     ---从机
         jl_en    <='0';
         rst_n_ad_i <='0';
@@ -465,6 +467,17 @@ begin
             else
                 ad_channel_en<=ad_channel_en;
             end if;
+            
+            if usb_rx_buf(11)=X"24" then
+                m0_num(7 downto 0)<=usb_rx_buf(11);
+            
+            elsif usb_rx_buf(11)=X"12" then
+                m0_num(7 downto 0)<=usb_rx_buf(11);
+            
+            else
+                m0_num(7 downto 0)<=m0_num(7 downto 0);
+            end if;
+            
             master_en<=not usb_rx_buf(28)(1);
             jl_en    <=usb_rx_buf(28)(0);
            -- rst_n_usb<=usb_rx_buf(29)(0);
@@ -1181,7 +1194,7 @@ begin
             m3_num<=X"00";
         end if;        
                
-        act_dl_num<=X"24"+m1_num+m2_num+m3_num;
+        act_dl_num<=m0_num+m1_num+m2_num+m3_num;
         
     end if;
 end process;
