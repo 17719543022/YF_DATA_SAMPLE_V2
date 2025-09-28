@@ -927,24 +927,24 @@ begin
                     m_axis_tlast<='1';
                     s2<=0;    
 --------------------------------电源管理状态上传-------------------------------------------------------------------
-                 when 5=>
-                    m_axis_tdata(7 downto 0)<=usb_pwrma_buf(cnt_tx);
-                    m_axis_tdata(15 downto 8)<=usb_pwrma_buf(cnt_tx+1);
-                    sum_data<=sum_data+usb_pwrma_buf(cnt_tx)+usb_pwrma_buf(cnt_tx+1);
-                    m_axis_tvalid<='1';
-                    if cnt_tx>=6 then    
-                        s2<=6;
-                        cnt_tx<=0;
-                    else
-                        cnt_tx<=cnt_tx+2;
-                    end if;
-                    
-                when 6=>                ---发送校验位与帧尾
-                    m_axis_tdata(7 downto 0)<=sum_data;
-                    m_axis_tdata(15 downto 8)<=usb_pwrma_buf(9);                    
-                    m_axis_tvalid<='1';
-                    m_axis_tlast<='1';
-                    s2<=0;       
+--                 when 5=>
+--                    m_axis_tdata(7 downto 0)<=usb_pwrma_buf(cnt_tx);
+--                    m_axis_tdata(15 downto 8)<=usb_pwrma_buf(cnt_tx+1);
+--                    sum_data<=sum_data+usb_pwrma_buf(cnt_tx)+usb_pwrma_buf(cnt_tx+1);
+--                    m_axis_tvalid<='1';
+--                    if cnt_tx>=6 then    
+--                        s2<=6;
+--                        cnt_tx<=0;
+--                    else
+--                        cnt_tx<=cnt_tx+2;
+--                    end if;
+--                    
+--                when 6=>                ---发送校验位与帧尾
+--                    m_axis_tdata(7 downto 0)<=sum_data;
+--                    m_axis_tdata(15 downto 8)<=usb_pwrma_buf(9);                    
+--                    m_axis_tvalid<='1';
+--                    m_axis_tlast<='1';
+--                    s2<=0;       
                     
                 
                 when others=>
