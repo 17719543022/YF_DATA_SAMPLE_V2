@@ -59,7 +59,6 @@ entity usb_pro_deal is
     pwr_adc_data      :in std_logic_vector(15 downto 0);
     pwr_data_vld      :in std_logic;
 -----------------配置命令----------------
-    up_data_freq_o    :out std_logic_vector(31 downto 0);
     ad_channel_en0    :out std_logic_vector(35 downto 0);
     work_mod          :out std_logic_vector(7 downto 0);
     m0_num            :out std_logic_vector(7 downto 0); --18导联36导联切换专用
@@ -435,8 +434,6 @@ ad_channel_en0<=ad_channel_en(35 downto 0);
 work_mod      <=work_mod_i;
 m0_num        <=m0_num_t;
 rst_n_usb     <=rst_n;
-
-up_data_freq_o<=up_data_freq;
 
 rst_n_ad<=rst_n_ad_i;
 

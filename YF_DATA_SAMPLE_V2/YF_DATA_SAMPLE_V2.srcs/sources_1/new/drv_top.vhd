@@ -48,7 +48,6 @@ generic(device_num:integer:=18);
 ----------------------------
     ad_channel_sta    :out std_logic_vector(35 downto 0);
 ---------------------------------
-    up_data_freq      :in std_logic_vector(31 downto 0);
     ad_channel_en     :in std_logic_vector(35 downto 0);
     work_mod          :in std_logic_vector(7 downto 0);
     m0_num            :in std_logic_vector(7 downto 0);
@@ -90,7 +89,6 @@ generic(device_num:integer:=18);
     audi_in       :in std_logic;
     adc_check_sus :out std_logic_vector(device_num-1 downto 0); 
     err_num       :out std_logic_vector(device_num-1 downto 0); 
-    sample_time_num :in std_logic_vector(31 downto 0);    
     work_mod        :in std_logic_vector(7 downto 0);
     m0_num          :in std_logic_vector(7 downto 0);
     sample_start    :in std_logic;
@@ -228,7 +226,6 @@ ins_ad_drv:ctrl_ad7177 port map(
     sync_n          =>  sync_n_i           ,
     audi_in         =>  audi_in            ,
     adc_check_sus   =>  adc_check_sus      ,
-    sample_time_num =>  up_data_freq       ,
     work_mod        =>  work_mod           ,
     m0_num          =>  m0_num             ,
     sample_start    =>  trigger_sample_cmd ,        ---´¥·¢ÃüÁî

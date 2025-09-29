@@ -45,7 +45,6 @@ generic(device_num:integer:=18);
     sync_n          :out std_logic;
     audi_in         :in std_logic;
     adc_check_sus   :out std_logic_vector(device_num-1 downto 0);
-    sample_time_num :in std_logic_vector(31 downto 0);
     work_mod        :in std_logic_vector(7 downto 0);
     m0_num          :in std_logic_vector(7 downto 0);
     sample_start    :in std_logic;
@@ -61,8 +60,6 @@ generic(device_num:integer:=18);
 end ctrl_ad7177;
 
 architecture Behavioral of ctrl_ad7177 is
--- constant ad_sps:integer:=2*10**3;
--- constant sample_time_num:integer:=50*10**6/ad_sps;
 constant resv_data:std_logic_vector(39 downto 0):=X"0000_0000_00";
 constant spi_rd_cmd:std_logic:='0';
 constant spi_wr_cmd:std_logic:='1';
