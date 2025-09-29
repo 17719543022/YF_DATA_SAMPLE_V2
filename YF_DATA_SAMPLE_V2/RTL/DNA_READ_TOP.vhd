@@ -65,17 +65,6 @@ signal SHIFT_neg:std_logic;
 signal shift_reg:std_logic_vector(dna_len-1 downto 0);
 
 
-COMPONENT ila_FPGA_DNA
-
-PORT (
-	clk : IN STD_LOGIC;
-
-
-
-	probe0 : IN STD_LOGIC_VECTOR(56 DOWNTO 0);
-	probe1 : IN STD_LOGIC
-);
-END COMPONENT  ;
 
 constant fpga_id0:std_logic_vector(59 downto 0):=X"058D50279E9685C";
 constant fpga_id1:std_logic_vector(59 downto 0):=X"058D50279E96854";
@@ -194,12 +183,6 @@ end process;
 device_id<=device_id_i;
 fpga_check<=fpga_check_i;
 
-ins_ila : ila_FPGA_DNA
-PORT MAP (
-	clk => clkin,
-	probe0 => device_id_i,
-	probe1 => fpga_check_i
-);
 
 
 
