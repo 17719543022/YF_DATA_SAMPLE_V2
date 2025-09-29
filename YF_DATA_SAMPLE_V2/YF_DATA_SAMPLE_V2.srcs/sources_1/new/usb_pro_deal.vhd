@@ -193,6 +193,8 @@ attribute mark_debug of cnt_tx           :signal is "true";
 attribute mark_debug of lock_data_en     :signal is "true";
 attribute mark_debug of door_bell_cmd    :signal is "true";
 attribute mark_debug of ad_data_buf_vld  :signal is "true";
+attribute mark_debug of s1               :signal is "true";
+attribute mark_debug of cnt_rx           :signal is "true";
 
 
 COMPONENT ila_0
