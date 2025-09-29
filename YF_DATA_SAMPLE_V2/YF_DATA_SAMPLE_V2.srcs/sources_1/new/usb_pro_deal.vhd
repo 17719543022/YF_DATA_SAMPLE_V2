@@ -62,6 +62,7 @@ entity usb_pro_deal is
     up_data_freq_o    :out std_logic_vector(31 downto 0);
     ad_channel_en0    :out std_logic_vector(35 downto 0);
     work_mod          :out std_logic_vector(7 downto 0);
+    m0_num            :out std_logic_vector(7 downto 0); --18导联36导联切换专用
     commom_sig        :out std_logic;
     cfg_data_en       :out std_logic;    
     trigger_sample_cmd:out std_logic;    
@@ -135,6 +136,7 @@ type t3 is array(0 to 9) of std_logic_vector(7 downto 0);
 signal usb_pwrma_buf:t3;
 
 signal work_mod_i               :std_logic_vector(7 downto 0);
+signal m0_num_t                 :std_logic_vector(7 downto 0);
 signal usb_rx_buf_type          :std_logic_vector(7 downto 0);
 signal sum_data                 :std_logic_vector(7 downto 0);
 
@@ -316,7 +318,6 @@ signal    m3_ad_data_buf_o_vld   :std_logic;
 
 
 
-signal    m0_num:std_logic_vector(7 downto 0); --18导联36导联切换专用
 signal    m1_num:std_logic_vector(7 downto 0);
 signal    m2_num:std_logic_vector(7 downto 0);
 signal    m3_num:std_logic_vector(7 downto 0);
@@ -430,6 +431,7 @@ end process;
 ---------------------协议处理--------------------------------------------------------------------------------
 ad_channel_en0<=ad_channel_en(35 downto 0);
 work_mod      <=work_mod_i;
+m0_num        <=m0_num_t;
 rst_n_usb     <=rst_n;
 
 up_data_freq_o<=up_data_freq;
@@ -442,7 +444,7 @@ begin
         work_mod_i<=X"51";            ----问询上传
         up_data_freq<=conv_std_logic_vector(ini_sample_rate,32); 
         ad_channel_en<=(others=>'0');
-        m0_num<=X"24";
+        m0_num_t<=X"24";
         master_en<='0';                     ---从机
         jl_en    <='0';
         rst_n_ad_i <='0';
@@ -469,13 +471,13 @@ begin
             end if;
             
             if usb_rx_buf(11)=X"24" then
-                m0_num(7 downto 0)<=usb_rx_buf(11);
+                m0_num_t(7 downto 0)<=usb_rx_buf(11);
             
             elsif usb_rx_buf(11)=X"12" then
-                m0_num(7 downto 0)<=usb_rx_buf(11);
+                m0_num_t(7 downto 0)<=usb_rx_buf(11);
             
             else
-                m0_num(7 downto 0)<=m0_num(7 downto 0);
+                m0_num_t(7 downto 0)<=m0_num_t(7 downto 0);
             end if;
             
             master_en<=not usb_rx_buf(28)(1);
@@ -1194,7 +1196,7 @@ begin
             m3_num<=X"00";
         end if;        
                
-        act_dl_num<=m0_num+m1_num+m2_num+m3_num;
+        act_dl_num<=m0_num_t+m1_num+m2_num+m3_num;
         
     end if;
 end process;

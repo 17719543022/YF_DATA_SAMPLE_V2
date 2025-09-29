@@ -235,6 +235,7 @@ generic(device_num:integer:=18);
     up_data_freq      :in std_logic_vector(31 downto 0);
     ad_channel_en     :in std_logic_vector(35 downto 0);
     work_mod          :in std_logic_vector(7 downto 0);
+    m0_num            :in std_logic_vector(7 downto 0);
     commom_sig        :in std_logic;
     cfg_data_en       :in std_logic;    
     trigger_sample_cmd:in std_logic;    
@@ -287,6 +288,7 @@ component usb_pro_deal is
     up_data_freq_o    :out std_logic_vector(31 downto 0);
     ad_channel_en0    :out std_logic_vector(35 downto 0);
     work_mod          :out std_logic_vector(7 downto 0);
+    m0_num            :out std_logic_vector(7 downto 0);
     commom_sig        :out std_logic;
     cfg_data_en       :out std_logic;    
     trigger_sample_cmd:out std_logic;    
@@ -334,6 +336,7 @@ signal    seq_ver           :std_logic_vector(47 downto 0);
 signal    up_data_freq      :std_logic_vector(31 downto 0);
 signal    ad_channel_en     :std_logic_vector(35 downto 0);
 signal    work_mod          :std_logic_vector(7 downto 0);
+signal    m0_num            :std_logic_vector(7 downto 0);
 signal    commom_sig        :std_logic;
 signal    cfg_data_en       :std_logic;    
 signal    trigger_sample_cmd:std_logic;     
@@ -527,6 +530,7 @@ ins_drv:drv_top port map(
     up_data_freq       =>   up_data_freq        ,
     ad_channel_en      =>   ad_channel_en       ,
     work_mod           =>   work_mod            ,
+    m0_num             =>   m0_num              ,
     commom_sig         =>   commom_sig          ,
     cfg_data_en        =>   cfg_data_en         ,
     trigger_sample_cmd =>   trigger_sample_cmd  ,
@@ -572,6 +576,7 @@ ins_usb_pro_deal:usb_pro_deal port map(
     up_data_freq_o         =>   up_data_freq             ,
     ad_channel_en0         =>   ad_channel_en            ,
     work_mod               =>   work_mod                 ,
+    m0_num                 =>   m0_num                   ,
     commom_sig             =>   commom_sig               ,
     cfg_data_en            =>   cfg_data_en              ,
     trigger_sample_cmd     =>   trigger_sample_cmd       ,
