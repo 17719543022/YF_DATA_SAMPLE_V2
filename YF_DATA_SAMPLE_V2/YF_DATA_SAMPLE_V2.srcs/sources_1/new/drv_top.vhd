@@ -43,7 +43,6 @@ generic(device_num:integer:=18);
     spi_cs            :out std_logic;
     spi_mosi          :out std_logic;
     spi_miso          :in std_logic_vector(device_num-1 downto 0);
-    sync_n            :out std_logic;
     audi_in           :in std_logic;
 ----------------------------
     ad_channel_sta    :out std_logic_vector(35 downto 0);
@@ -85,7 +84,6 @@ generic(device_num:integer:=18);
     spi_cs        :out std_logic;
     spi_mosi      :out std_logic;
     spi_miso      :in std_logic_vector(device_num-1 downto 0);
-    sync_n        :out std_logic;
     audi_in       :in std_logic;
     adc_check_sus :out std_logic_vector(device_num-1 downto 0); 
     err_num       :out std_logic_vector(device_num-1 downto 0); 
@@ -175,7 +173,6 @@ signal    spi_clk_i       : std_logic;
 signal    spi_cs_i        : std_logic;
 signal    spi_mosi_i      : std_logic;
 -- signal    spi_miso      :std_logic_vector(device_num-1 downto 0);
-signal    sync_n_i        : std_logic;
 signal    rx_ad_data_vld_i: std_logic;
 signal    rx_ad_data_i    : std_logic_vector(2*device_num*32-1 downto 0);
 
@@ -209,7 +206,6 @@ adc_spi_check(device_num-1 downto 0)<=adc_check_sus;
 spi_clk<=spi_clk_i;
 spi_cs<=spi_cs_i;
 spi_mosi<=spi_mosi_i;
-sync_n<=sync_n_i;
 
 
 rst_n_spi<=rst_n_ad;
@@ -223,7 +219,6 @@ ins_ad_drv:ctrl_ad7177 port map(
     spi_cs          =>  spi_cs_i           ,
     spi_mosi        =>  spi_mosi_i         ,
     spi_miso        =>  spi_miso           ,
-    sync_n          =>  sync_n_i           ,
     audi_in         =>  audi_in            ,
     adc_check_sus   =>  adc_check_sus      ,
     work_mod        =>  work_mod           ,

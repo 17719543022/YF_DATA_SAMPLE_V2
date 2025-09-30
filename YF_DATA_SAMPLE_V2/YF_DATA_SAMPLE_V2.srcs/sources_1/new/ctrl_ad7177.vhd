@@ -42,7 +42,6 @@ generic(device_num:integer:=18);
     spi_cs          :out std_logic;
     spi_mosi        :out std_logic;
     spi_miso        :in std_logic_vector(device_num-1 downto 0);
-    sync_n          :out std_logic;
     audi_in         :in std_logic;
     adc_check_sus   :out std_logic_vector(device_num-1 downto 0);
     work_mod        :in std_logic_vector(7 downto 0);
@@ -187,7 +186,6 @@ begin
          adc_check_sus<=(others=>'0');
          err_num<=(others=>'0');
          ad_cfg_over<='0';
-         sync_n<='1';
          s_axis_trst<='0';
          cnt:=0;
          check_data_n<='1';
@@ -378,13 +376,11 @@ begin
     -------------------------------------------------------------------
                     when 6=>
                         ad_cfg_over<='1';
-                        sync_n<='1';
                         check_data_n<='0';
                         cnt:=0;
                         s1<=7;
                     
                     when 7=>
-                        sync_n<='1';                ---开始转换数据
                         if cnt>=10 then
                             s1<=8;
                             cnt:=0;
@@ -625,13 +621,11 @@ begin
     -------------------------------------------------------------------
                     when 6=>
                         ad_cfg_over<='1';
-                        sync_n<='1';
                         check_data_n<='0';
                         cnt:=0;
                         s1<=7;
                     
                     when 7=>
-                        sync_n<='1';                ---开始转换数据
                         if cnt>=10 then
                             s1<=8;
                             cnt:=0;

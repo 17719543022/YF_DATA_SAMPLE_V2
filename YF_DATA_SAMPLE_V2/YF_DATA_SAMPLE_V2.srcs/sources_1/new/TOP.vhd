@@ -57,7 +57,6 @@ entity TOP is
     spi_cs                  :out std_logic;
     spi_mosi                :out std_logic;
     spi_miso                :in std_logic_vector(18-1 downto 0);
-    sync_n                  :out std_logic;
     audi_in                 :in std_logic;
 ------------------------------------------
     sr_srclr                :out std_logic;             ---复位信号(低有效)
@@ -227,7 +226,6 @@ generic(device_num:integer:=18);
     spi_cs            :out std_logic;
     spi_mosi          :out std_logic;
     spi_miso          :in std_logic_vector(device_num-1 downto 0);
-    sync_n            :out std_logic;
     audi_in           :in std_logic;
 ----------------------------
     ad_channel_sta    :out std_logic_vector(35 downto 0);
@@ -519,7 +517,6 @@ ins_drv:drv_top port map(
     spi_cs             =>   spi_cs              ,
     spi_mosi           =>   spi_mosi            ,
     spi_miso           =>   spi_miso            ,
-    sync_n             =>   sync_n              ,
     audi_in            =>   audi_in             ,
     ---------------     =>  ---------------     ,
     ad_channel_sta     =>   ad_channel_sta      ,
