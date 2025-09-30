@@ -196,22 +196,6 @@ attribute mark_debug of s1               :signal is "true";
 attribute mark_debug of cnt_rx           :signal is "true";
 
 
-COMPONENT ila_0
-
-PORT (
-	clk : IN STD_LOGIC;
-
-
-
-	probe0 : IN STD_LOGIC_VECTOR(23 DOWNTO 0); 
-	probe1 : IN STD_LOGIC_VECTOR(23 DOWNTO 0); 
-	probe2 : IN STD_LOGIC_VECTOR(23 DOWNTO 0); 
-	probe3 : IN STD_LOGIC_VECTOR(23 DOWNTO 0); 
-	probe4 : IN STD_LOGIC_VECTOR(23 DOWNTO 0); 
-	probe5 : IN STD_LOGIC_VECTOR(23 DOWNTO 0);
-	probe6 : IN STD_LOGIC
-);
-END COMPONENT  ;
 
 signal ad_data_23:std_logic_vector(23 downto 0);
 
@@ -735,20 +719,6 @@ lock_data_en_pos<=lock_data_en and not lock_data_en_d1;
 
 
 -----------------数据上传回复/自检回复------------------------------------------------------------------
-uut : ila_0
-PORT MAP (
-	clk    => clkin,
-	probe0 => adui_data,
-	probe1 => m1_adui_data_out,
-	probe2 => m2_adui_data_out,
-	probe3 => m3_adui_data_out,
-	probe4 => ad_data_buf(21),
-	probe5 => ad_data_buf_r1(21),
-	probe6 => ad_data_buf_vld
-);
-
-
-
 process(clkin,rst_n)
 begin
     if rising_edge(clkin) then
