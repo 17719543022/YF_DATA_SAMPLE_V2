@@ -122,6 +122,8 @@ constant data_reg:std_logic_vector(7 downto 0):=X"04";
 
 
 signal	sample_en		: std_logic;	
+signal m0_num_d                 : std_logic_vector(7 downto 0);
+signal m0_num_change            : std_logic;
 -- signal	adc_check_sus   : std_logic_vector(device_num-1 downto 0);	
 signal	ad_cfg_over		: std_logic;	
 signal	data_lock		: std_logic;	
@@ -150,6 +152,7 @@ attribute mark_debug of spi_clk	:signal is "true";
 attribute mark_debug of spi_miso:signal is "true";
 attribute mark_debug of spi_rd_vld        :signal is "true";
 attribute mark_debug of s1                :signal is "true";
+attribute mark_debug of m0_num_change     :signal is "true";
 
 
 begin
@@ -389,7 +392,9 @@ begin
                         end if;
                         
                     when 8=>
-                        if spi_miso=resv_data(device_num-1 downto 0) then  ---miso='0'
+                        if m0_num_change='1' then
+                            s1<=0;
+                        elsif spi_miso=resv_data(device_num-1 downto 0) then  ---miso='0'
                             s1<=9;
                             err_num<=(others=>'0');
                         elsif sample_en='1' then                        ---出现采集错误，ADC不能进行正常的通信，给出错误标识
@@ -428,7 +433,9 @@ begin
                     when 13=>
                         rx_num<=0;
                         ad_data_buf_vld_i<='0';
-                        if sample_en='1' or rx_num>=4 then
+                        if m0_num_change='1' then
+                            s1<=0;
+                        elsif sample_en='1' or rx_num>=4 then
                             s1<=5;
                         else
                             s1<=s1;
@@ -634,7 +641,9 @@ begin
                         end if;
                         
                     when 8=>
-                        if spi_miso=resv_data(device_num-1 downto 0) then  ---miso='0'
+                        if m0_num_change='1' then
+                            s1<=0;
+                        elsif spi_miso=resv_data(device_num-1 downto 0) then  ---miso='0'
                             s1<=9;
                             err_num<=(others=>'0');
                         elsif sample_en='1' then                        ---出现采集错误，ADC不能进行正常的通信，给出错误标识
@@ -673,7 +682,9 @@ begin
                     when 13=>
                         rx_num<=0;
                         ad_data_buf_vld_i<='0';
-                        if sample_en='1' or rx_num>=4 then
+                        if m0_num_change='1' then
+                            s1<=0;
+                        elsif sample_en='1' or rx_num>=4 then
                             s1<=5;
                         else
                             s1<=s1;
@@ -688,6 +699,24 @@ begin
 end process;
 
 sample_en<=sample_start;
+process(clkin,rst_n)
+begin
+    if rst_n='0' then
+        m0_num_change<='0';
+        m0_num_d<=X"24";
+    else
+        if rising_edge(clkin) then
+            m0_num_d<=m0_num;
+            if m0_num=X"12" and m0_num_d=X"24" then
+                m0_num_change<='1';
+            elsif m0_num=X"24" and m0_num_d=X"12" then
+                m0_num_change<='1';
+            else
+                m0_num_change<='0';
+            end if;
+        end if;
+    end if;
+end process;
 ------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 process(clkin,rst_n)
