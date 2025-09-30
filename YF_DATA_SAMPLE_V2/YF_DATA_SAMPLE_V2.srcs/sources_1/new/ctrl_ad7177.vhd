@@ -150,7 +150,6 @@ attribute mark_debug of spi_cs_i:signal is "true";
 attribute mark_debug of spi_clk	:signal is "true";
 attribute mark_debug of spi_miso:signal is "true";
 attribute mark_debug of spi_rd_vld        :signal is "true";
-attribute mark_debug of spi_rd_data       :signal is "true";
 attribute mark_debug of s1                :signal is "true";
 
 
