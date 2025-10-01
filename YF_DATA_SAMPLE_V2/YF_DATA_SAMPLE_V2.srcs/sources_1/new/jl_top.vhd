@@ -189,24 +189,6 @@ signal    ad_data_buf_o_vld_i   : std_logic;
 
 
 
-COMPONENT ila_jl
-
-PORT (
-	clk : IN STD_LOGIC;
-
-
-
-	probe0 : IN STD_LOGIC; 
-	probe1 : IN STD_LOGIC; 
-	probe2 : IN STD_LOGIC; 
-	probe3 : IN STD_LOGIC; 
-	probe4 : IN STD_LOGIC; 
-	probe5 : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
-	probe6 : IN STD_LOGIC;
-	probe7 : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
-	probe8 : IN STD_LOGIC
-);
-END COMPONENT  ;
 
 
 
@@ -224,19 +206,6 @@ t_spi_data      <=spi_data     ;
 
 
 
-u_ila : ila_jl
-PORT MAP (
-	clk => clkin,
-	probe0 => t_spicfg_clk , 
-	probe1 => t_spicfg_cs  , 
-	probe2 => t_spicfg_data, 
-	probe3 => t_spi_clk    , 
-	probe4 => t_spi_cs     , 
-	probe5 => t_spi_data   ,
-	probe6 => link_sta_i   ,
-	probe7 => frame_cnt    ,
-	probe8 => ad_data_buf_o_vld_i   
-);
 
 
 ad_data_buf_o_vld<=ad_data_buf_o_vld_i;
