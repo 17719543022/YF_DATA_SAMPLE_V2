@@ -153,6 +153,7 @@ attribute mark_debug of spi_miso:signal is "true";
 attribute mark_debug of spi_rd_vld        :signal is "true";
 attribute mark_debug of s1                :signal is "true";
 attribute mark_debug of m0_num_change     :signal is "true";
+attribute mark_debug of adui_data         :signal is "true";
 
 
 begin
@@ -574,7 +575,7 @@ begin
                         
                     when 12=>
                         s_axis_tnum<=conv_std_logic_vector(24,16);
-                        s_axis_tdata<=X"11_8043"&resv_data(15 downto 0); --使能data_stat模式 24位转换结果    
+                        s_axis_tdata<=X"11_0043"&resv_data(15 downto 0); --使能data_stat模式 24位转换结果    
                         s_axis_tuser<=spi_wr_cmd;  
                         ad_cfg_over<='1';
                         if s_axis_tvalid='1' and s_axis_tready='1' then
@@ -669,7 +670,7 @@ begin
                     when 10=>
                         if spi_rd_vld='1' then
                             if rx_num>=2 then
-                                s1<=13;
+                                s1<=6;
                                 ad_data_buf_vld_i<='1';
                             else
                                 s1<=6;

@@ -347,16 +347,16 @@ set_property port_width 2 [get_debug_ports u_ila_0/probe21]
 connect_debug_port u_ila_0/probe21 [get_nets [list {ins_usb_pro_deal/s1[0]} {ins_usb_pro_deal/s1[1]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe22]
-set_property port_width 32 [get_debug_ports u_ila_0/probe22]
-connect_debug_port u_ila_0/probe22 [get_nets [list {ins_usb_pro_deal/cnt_cycle[0]} {ins_usb_pro_deal/cnt_cycle[1]} {ins_usb_pro_deal/cnt_cycle[2]} {ins_usb_pro_deal/cnt_cycle[3]} {ins_usb_pro_deal/cnt_cycle[4]} {ins_usb_pro_deal/cnt_cycle[5]} {ins_usb_pro_deal/cnt_cycle[6]} {ins_usb_pro_deal/cnt_cycle[7]} {ins_usb_pro_deal/cnt_cycle[8]} {ins_usb_pro_deal/cnt_cycle[9]} {ins_usb_pro_deal/cnt_cycle[10]} {ins_usb_pro_deal/cnt_cycle[11]} {ins_usb_pro_deal/cnt_cycle[12]} {ins_usb_pro_deal/cnt_cycle[13]} {ins_usb_pro_deal/cnt_cycle[14]} {ins_usb_pro_deal/cnt_cycle[15]} {ins_usb_pro_deal/cnt_cycle[16]} {ins_usb_pro_deal/cnt_cycle[17]} {ins_usb_pro_deal/cnt_cycle[18]} {ins_usb_pro_deal/cnt_cycle[19]} {ins_usb_pro_deal/cnt_cycle[20]} {ins_usb_pro_deal/cnt_cycle[21]} {ins_usb_pro_deal/cnt_cycle[22]} {ins_usb_pro_deal/cnt_cycle[23]} {ins_usb_pro_deal/cnt_cycle[24]} {ins_usb_pro_deal/cnt_cycle[25]} {ins_usb_pro_deal/cnt_cycle[26]} {ins_usb_pro_deal/cnt_cycle[27]} {ins_usb_pro_deal/cnt_cycle[28]} {ins_usb_pro_deal/cnt_cycle[29]} {ins_usb_pro_deal/cnt_cycle[30]} {ins_usb_pro_deal/cnt_cycle[31]}]]
+set_property port_width 1 [get_debug_ports u_ila_0/probe22]
+connect_debug_port u_ila_0/probe22 [get_nets [list ins_usb_pro_deal/lock_data_en_pos]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe23]
 set_property port_width 1 [get_debug_ports u_ila_0/probe23]
-connect_debug_port u_ila_0/probe23 [get_nets [list ins_usb_pro_deal/lock_data_en_pos]]
+connect_debug_port u_ila_0/probe23 [get_nets [list ins_drv/ins_ad_drv/m0_num_change]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe24]
-set_property port_width 1 [get_debug_ports u_ila_0/probe24]
-connect_debug_port u_ila_0/probe24 [get_nets [list ins_drv/ins_ad_drv/m0_num_change]]
+set_property port_width 24 [get_debug_ports u_ila_0/probe24]
+connect_debug_port u_ila_0/probe24 [get_nets [list {ins_drv/ins_ad_drv/adui_data[0]} {ins_drv/ins_ad_drv/adui_data[1]} {ins_drv/ins_ad_drv/adui_data[2]} {ins_drv/ins_ad_drv/adui_data[3]} {ins_drv/ins_ad_drv/adui_data[4]} {ins_drv/ins_ad_drv/adui_data[5]} {ins_drv/ins_ad_drv/adui_data[6]} {ins_drv/ins_ad_drv/adui_data[7]} {ins_drv/ins_ad_drv/adui_data[8]} {ins_drv/ins_ad_drv/adui_data[9]} {ins_drv/ins_ad_drv/adui_data[10]} {ins_drv/ins_ad_drv/adui_data[11]} {ins_drv/ins_ad_drv/adui_data[12]} {ins_drv/ins_ad_drv/adui_data[13]} {ins_drv/ins_ad_drv/adui_data[14]} {ins_drv/ins_ad_drv/adui_data[15]} {ins_drv/ins_ad_drv/adui_data[16]} {ins_drv/ins_ad_drv/adui_data[17]} {ins_drv/ins_ad_drv/adui_data[18]} {ins_drv/ins_ad_drv/adui_data[19]} {ins_drv/ins_ad_drv/adui_data[20]} {ins_drv/ins_ad_drv/adui_data[21]} {ins_drv/ins_ad_drv/adui_data[22]} {ins_drv/ins_ad_drv/adui_data[23]}]]
 
 
 
