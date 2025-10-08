@@ -143,6 +143,7 @@ signal m_axis_tdata_temp0:std_logic_vector(1*device_num*32-1 downto 0);
 signal m_axis_tdata_temp1:std_logic_vector(1*device_num*32-1 downto 0);
 signal	rx_ad_data_temp_vld		: std_logic;	
 signal	ad_data_buf_vld_i		: std_logic;	
+signal m0_num_half              : std_logic;
 
 
 attribute mark_debug:string;
@@ -154,6 +155,11 @@ attribute mark_debug of spi_rd_vld        :signal is "true";
 attribute mark_debug of s1                :signal is "true";
 attribute mark_debug of m0_num_change     :signal is "true";
 attribute mark_debug of adui_data         :signal is "true";
+attribute mark_debug of m0_num_half       :signal is "true";
+attribute mark_debug of sample_en         :signal is "true";
+attribute mark_debug of rx_num            :signal is "true";
+attribute mark_debug of s_axis_tvalid     :signal is "true";
+attribute mark_debug of s_axis_tready     :signal is "true";
 
 
 begin
@@ -194,6 +200,7 @@ begin
          cnt:=0;
          check_data_n<='1';
          ad_data_buf_vld_i<='0';
+         m0_num_half<='0';
     else
         if rising_edge(clkin) then  
             if m0_num = X"24" then
@@ -395,6 +402,14 @@ begin
                     when 8=>
                         if m0_num_change='1' then
                             s1<=0;
+                            adc_check_sus<=(others=>'0');
+                            err_num<=(others=>'0');
+                            ad_cfg_over<='0';
+                            s_axis_trst<='0';
+                            cnt:=0;
+                            check_data_n<='1';
+                            ad_data_buf_vld_i<='0';
+                            m0_num_half<='0';
                         elsif spi_miso=resv_data(device_num-1 downto 0) then  ---miso='0'
                             s1<=9;
                             err_num<=(others=>'0');
@@ -423,8 +438,10 @@ begin
                             if rx_num>=2 then
                                 s1<=13;
                                 ad_data_buf_vld_i<='1';
+                                m0_num_half<='1';
                             else
                                 s1<=6;
+                                m0_num_half<='0';
                             end if;
                         else
                             s1<=s1;
@@ -436,6 +453,14 @@ begin
                         ad_data_buf_vld_i<='0';
                         if m0_num_change='1' then
                             s1<=0;
+                            adc_check_sus<=(others=>'0');
+                            err_num<=(others=>'0');
+                            ad_cfg_over<='0';
+                            s_axis_trst<='0';
+                            cnt:=0;
+                            check_data_n<='1';
+                            ad_data_buf_vld_i<='0';
+                            m0_num_half<='0';
                         elsif sample_en='1' or rx_num>=4 then
                             s1<=5;
                         else
@@ -644,6 +669,14 @@ begin
                     when 8=>
                         if m0_num_change='1' then
                             s1<=0;
+                            adc_check_sus<=(others=>'0');
+                            err_num<=(others=>'0');
+                            ad_cfg_over<='0';
+                            s_axis_trst<='0';
+                            cnt:=0;
+                            check_data_n<='1';
+                            ad_data_buf_vld_i<='0';
+                            m0_num_half<='0';
                         elsif spi_miso=resv_data(device_num-1 downto 0) then  ---miso='0'
                             s1<=9;
                             err_num<=(others=>'0');
@@ -672,8 +705,10 @@ begin
                             if rx_num>=2 then
                                 s1<=6;
                                 ad_data_buf_vld_i<='1';
+                                m0_num_half<='1';
                             else
                                 s1<=6;
+                                m0_num_half<='0';
                             end if;
                         else
                             s1<=s1;
@@ -685,6 +720,14 @@ begin
                         ad_data_buf_vld_i<='0';
                         if m0_num_change='1' then
                             s1<=0;
+                            adc_check_sus<=(others=>'0');
+                            err_num<=(others=>'0');
+                            ad_cfg_over<='0';
+                            s_axis_trst<='0';
+                            cnt:=0;
+                            check_data_n<='1';
+                            ad_data_buf_vld_i<='0';
+                            m0_num_half<='0';
                         elsif sample_en='1' or rx_num>=4 then
                             s1<=5;
                         else
@@ -772,9 +815,9 @@ begin
             
     elsif rising_edge(clkin) then
         if spi_rd_vld='1' and spi_rd_data(37+40*i downto 32+40*i)=data_reg(5 downto 0)  then
-            if  spi_rd_data(1+40*i downto 0+40*i)="00" then
+            if  m0_num_half='1' then
                 ad_data_buf(0+2*i)<=spi_rd_data(31+40*i downto 8+40*i);
-            elsif spi_rd_data(1+40*i downto 0+40*i)="01" then
+            elsif m0_num_half='0' then
                 ad_data_buf(1+2*i)<=spi_rd_data(31+40*i downto 8+40*i);
             end if;
         end if;  

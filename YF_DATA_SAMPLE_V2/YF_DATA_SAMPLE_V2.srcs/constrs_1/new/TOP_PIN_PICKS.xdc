@@ -357,6 +357,26 @@ create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe24]
 set_property port_width 24 [get_debug_ports u_ila_0/probe24]
 connect_debug_port u_ila_0/probe24 [get_nets [list {ins_drv/ins_ad_drv/adui_data[0]} {ins_drv/ins_ad_drv/adui_data[1]} {ins_drv/ins_ad_drv/adui_data[2]} {ins_drv/ins_ad_drv/adui_data[3]} {ins_drv/ins_ad_drv/adui_data[4]} {ins_drv/ins_ad_drv/adui_data[5]} {ins_drv/ins_ad_drv/adui_data[6]} {ins_drv/ins_ad_drv/adui_data[7]} {ins_drv/ins_ad_drv/adui_data[8]} {ins_drv/ins_ad_drv/adui_data[9]} {ins_drv/ins_ad_drv/adui_data[10]} {ins_drv/ins_ad_drv/adui_data[11]} {ins_drv/ins_ad_drv/adui_data[12]} {ins_drv/ins_ad_drv/adui_data[13]} {ins_drv/ins_ad_drv/adui_data[14]} {ins_drv/ins_ad_drv/adui_data[15]} {ins_drv/ins_ad_drv/adui_data[16]} {ins_drv/ins_ad_drv/adui_data[17]} {ins_drv/ins_ad_drv/adui_data[18]} {ins_drv/ins_ad_drv/adui_data[19]} {ins_drv/ins_ad_drv/adui_data[20]} {ins_drv/ins_ad_drv/adui_data[21]} {ins_drv/ins_ad_drv/adui_data[22]} {ins_drv/ins_ad_drv/adui_data[23]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe25]
+set_property port_width 1 [get_debug_ports u_ila_0/probe25]
+connect_debug_port u_ila_0/probe25 [get_nets [list ins_drv/ins_ad_drv/m0_num_half]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe26]
+set_property port_width 1 [get_debug_ports u_ila_0/probe26]
+connect_debug_port u_ila_0/probe26 [get_nets [list ins_drv/ins_ad_drv/sample_en]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe27]
+set_property port_width 4 [get_debug_ports u_ila_0/probe27]
+connect_debug_port u_ila_0/probe27 [get_nets [list {ins_drv/ins_ad_drv/rx_num[0]} {ins_drv/ins_ad_drv/rx_num[1]} {ins_drv/ins_ad_drv/rx_num[2]} {ins_drv/ins_ad_drv/rx_num[3]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe28]
+set_property port_width 1 [get_debug_ports u_ila_0/probe28]
+connect_debug_port u_ila_0/probe28 [get_nets [list ins_drv/ins_ad_drv/s_axis_tready]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe29]
+set_property port_width 1 [get_debug_ports u_ila_0/probe29]
+connect_debug_port u_ila_0/probe29 [get_nets [list ins_drv/ins_ad_drv/s_axis_tvalid]]
 
 
 
