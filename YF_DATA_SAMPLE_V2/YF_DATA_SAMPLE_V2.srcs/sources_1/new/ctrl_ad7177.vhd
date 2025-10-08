@@ -639,16 +639,17 @@ begin
                         
      
                     when 5=>
-                        s_axis_tnum<=conv_std_logic_vector(24,16);
-                        s_axis_tdata<=X"01_8010"&resv_data(15 downto 0); --配置为单次转换模式 
-                        s_axis_tuser<=spi_wr_cmd;                    
-                        if s_axis_tvalid='1' and s_axis_tready='1' then
-                            s1<=6;
-                            s_axis_tvalid<='0';
-                        else
-                            s1<=s1;
-                            s_axis_tvalid<='1';
-                        end if;  
+                        --s_axis_tnum<=conv_std_logic_vector(24,16);
+                        --s_axis_tdata<=X"01_8010"&resv_data(15 downto 0); --配置为单次转换模式 
+                        --s_axis_tuser<=spi_wr_cmd;
+                        --if s_axis_tvalid='1' and s_axis_tready='1' then
+                        --    s1<=6;
+                        --    s_axis_tvalid<='0';
+                        --else
+                        --    s1<=s1;
+                        --    s_axis_tvalid<='1';
+                        --end if;
+                        s1<=6;
                         check_data_n<='1';
                         rx_num<=0;
     -------------------------------------------------------------------
@@ -703,7 +704,7 @@ begin
                     when 10=>
                         if spi_rd_vld='1' then
                             if rx_num>=2 then
-                                s1<=6;
+                                s1<=13;
                                 ad_data_buf_vld_i<='1';
                                 m0_num_half<='1';
                             else
