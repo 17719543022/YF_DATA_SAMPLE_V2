@@ -178,23 +178,7 @@ signal ad_data_buf_r2: ad_buf_t:=(others=>X"020202");
 signal ad_data_buf_r3: ad_buf_t:=(others=>X"030303");
 
 attribute mark_debug:string;
-attribute mark_debug of s_axis_tvalid  :signal is "true";
-attribute mark_debug of s_axis_tdata   :signal is "true";
-attribute mark_debug of m_axis_tvalid  :signal is "true";
-attribute mark_debug of m_axis_tready  :signal is "true";
-attribute mark_debug of m_axis_tdata   :signal is "true";
-attribute mark_debug of m_axis_tlast   :signal is "true";
-
-attribute mark_debug of usb_rx_buf_vld   :signal is "true";
-attribute mark_debug of usb_rx_buf_type  :signal is "true";
-attribute mark_debug of s2               :signal is "true";
-attribute mark_debug of cnt_tx           :signal is "true";
-attribute mark_debug of lock_data_en     :signal is "true";
-attribute mark_debug of door_bell_cmd    :signal is "true";
 attribute mark_debug of ad_data_buf_vld  :signal is "true";
-attribute mark_debug of s1               :signal is "true";
-attribute mark_debug of cnt_rx           :signal is "true";
-attribute mark_debug of lock_data_en_pos :signal is "true";
 
 
 

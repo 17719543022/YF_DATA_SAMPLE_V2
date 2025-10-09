@@ -154,7 +154,6 @@ attribute mark_debug of spi_miso:signal is "true";
 attribute mark_debug of spi_rd_vld        :signal is "true";
 attribute mark_debug of s1                :signal is "true";
 attribute mark_debug of m0_num_change     :signal is "true";
-attribute mark_debug of adui_data         :signal is "true";
 attribute mark_debug of m0_num_half       :signal is "true";
 attribute mark_debug of sample_en         :signal is "true";
 attribute mark_debug of rx_num            :signal is "true";
