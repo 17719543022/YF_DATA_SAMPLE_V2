@@ -161,8 +161,6 @@ X"00"
 
 -----------debug signal ----------------------------------------
 attribute mark_debug : string;
-attribute mark_debug of factor_num: signal is "true";
-attribute mark_debug of factor_num_vld: signal is "true";
 attribute mark_debug of rx_buf_vld   : signal is "true";
 attribute mark_debug of s_axis_uart_tvalid: signal is "true";
 attribute mark_debug of s_axis_uart_tdata: signal is "true";

@@ -179,6 +179,10 @@ signal ad_data_buf_r3: ad_buf_t:=(others=>X"030303");
 
 attribute mark_debug:string;
 attribute mark_debug of ad_data_buf_vld  :signal is "true";
+attribute mark_debug of usb_rx_buf_vld   :signal is "true";
+attribute mark_debug of usb_rx_buf_type  :signal is "true";
+attribute mark_debug of work_mod_i       :signal is "true";
+attribute mark_debug of cnt_cycle        :signal is "true";
 
 
 
