@@ -671,7 +671,9 @@ begin
         lock_data_en<='0';
     elsif rising_edge(clkin) then            
         if work_mod_i=X"50" then          --自动上传
-            if cnt_cycle>=up_data_freq-1 then
+            if ad_data_buf_vld='1' then
+                cnt_cycle<=conv_integer('0'&up_data_freq(31 downto 1))-1;
+            elsif cnt_cycle>=up_data_freq-1 then
                 cnt_cycle<=0;
             else
                 cnt_cycle<=cnt_cycle+1;
