@@ -47,6 +47,7 @@ generic(device_num:integer:=18);
     work_mod        :in std_logic_vector(7 downto 0);
     m0_num          :in std_logic_vector(7 downto 0);
     sample_start    :in std_logic;
+    sample_starx    :in std_logic;
 ----------------------------
     ad_data_buf     :out ad_buf_t;
     ad_data_buf_vld :out std_logic;
@@ -122,6 +123,7 @@ constant data_reg:std_logic_vector(7 downto 0):=X"04";
 
 
 signal	sample_en		: std_logic;	
+signal  sample_ex       : std_logic;
 signal m0_num_d                 : std_logic_vector(7 downto 0);
 signal m0_num_change            : std_logic;
 -- signal	adc_check_sus   : std_logic_vector(device_num-1 downto 0);	
@@ -156,6 +158,7 @@ attribute mark_debug of s1                :signal is "true";
 attribute mark_debug of m0_num_change     :signal is "true";
 attribute mark_debug of m0_num_half       :signal is "true";
 attribute mark_debug of sample_en         :signal is "true";
+attribute mark_debug of sample_ex         :signal is "true";
 attribute mark_debug of rx_num            :signal is "true";
 attribute mark_debug of s_axis_tvalid     :signal is "true";
 attribute mark_debug of s_axis_tready     :signal is "true";
@@ -660,7 +663,7 @@ begin
                         if spi_miso=resv_data(device_num-1 downto 0) then  ---miso='0'
                             s1<=9;
                             err_num<=(others=>'0');
-                        elsif sample_en='1' then                        ---出现采集错误，ADC不能进行正常的通信，给出错误标识
+                        elsif sample_ex='1' then                        ---出现采集错误，ADC不能进行正常的通信，给出错误标识
                             s1<=9;
                             rx_num<=4;
                             err_num<=spi_miso;
@@ -698,7 +701,7 @@ begin
                     when 13=>
                         rx_num<=0;
                         ad_data_buf_vld_i<='0';
-                        if sample_en='1' or rx_num>=4 then
+                        if sample_ex='1' or rx_num>=4 then
                             s1<=5;
                         else
                             s1<=s1;
@@ -713,6 +716,8 @@ begin
 end process;
 
 sample_en<=sample_start;
+sample_ex<=sample_starx;
+
 process(clkin,rst_n)
 begin
     if rst_n='0' then

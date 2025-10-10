@@ -53,6 +53,7 @@ generic(device_num:integer:=18);
     commom_sig        :in std_logic;
     cfg_data_en       :in std_logic;    
     trigger_sample_cmd:in std_logic;    
+    trigger_sample_cmx:in std_logic;
 ------------------------------------------    
     channel_check_en  :in std_logic;
     channel_check     :in std_logic_vector(35 downto 0); 
@@ -90,6 +91,7 @@ generic(device_num:integer:=18);
     work_mod        :in std_logic_vector(7 downto 0);
     m0_num          :in std_logic_vector(7 downto 0);
     sample_start    :in std_logic;
+    sample_starx    :in std_logic;
 ----------------------------
     ad_data_buf     :out ad_buf_t;
     ad_data_buf_vld :out std_logic;
@@ -136,6 +138,7 @@ signal   tx_en               :std_logic;
 signal   tx_en_d1            :std_logic;
 signal   rst_n_spi            :std_logic;
 signal   sample_start            :std_logic;
+signal   sample_starx            :std_logic;
 
 
 
@@ -224,6 +227,7 @@ ins_ad_drv:ctrl_ad7177 port map(
     work_mod        =>  work_mod           ,
     m0_num          =>  m0_num             ,
     sample_start    =>  trigger_sample_cmd ,        ---´¥·¢ÃüÁî
+    sample_starx    =>  trigger_sample_cmx ,        ---´¥·¢ÃüÁî
     -------------   =>  -------------      ,
     ad_data_buf     =>  ad_data_buf_i      ,
     ad_data_buf_vld =>  ad_data_buf_vld    ,

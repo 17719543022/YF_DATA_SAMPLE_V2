@@ -65,6 +65,7 @@ entity usb_pro_deal is
     commom_sig        :out std_logic;
     cfg_data_en       :out std_logic;    
     trigger_sample_cmd:out std_logic;    
+    trigger_sample_cmx:out std_logic;
 ---------------自检命令---------------------------    
     channel_check_en  :out std_logic;
     channel_check0    :out std_logic_vector(35 downto 0);
@@ -116,6 +117,7 @@ signal cnt_trigger:integer range 0 to 2047;
 signal cnt_rx:integer range 0 to 2047;
 signal cnt_tx:integer range 0 to 2047;
 signal cnt_cycle:integer;
+signal cnt_cyclex:integer;
 signal s1    :integer range 0 to 3;
 signal s2    :integer range 0 to 7;
 
@@ -612,6 +614,25 @@ end process;
 process(clkin,rst_n)
 begin
     if rst_n='0' then
+       trigger_sample_cmx<='0';
+    elsif rising_edge(clkin) then
+        if usb_rx_buf_vld='1' and usb_rx_buf_type=X"13" then
+            trigger_sample_cmx<='1';
+        elsif work_mod_i=X"50" then
+            if cnt_cyclex=10 then
+                trigger_sample_cmx<='1';    ---发送采集命令    --
+            else
+                trigger_sample_cmx<='0';
+            end if;
+        else
+            trigger_sample_cmx<='0';
+        end if;
+    end if;
+end process;
+
+process(clkin,rst_n)
+begin
+    if rst_n='0' then
        trigger_sample_cmd<='0';
     elsif rising_edge(clkin) then
         if usb_rx_buf_vld='1' and usb_rx_buf_type=X"13" then
@@ -666,6 +687,25 @@ begin
     end if;
 end process;
 -----------------------------------------------------------------------------------
+process(clkin,rst_n)
+begin
+    if rst_n='0' then
+        cnt_cyclex<=1;
+    elsif rising_edge(clkin) then
+        if work_mod_i=X"50" then
+            if ad_data_buf_vld='1' then
+                cnt_cyclex<=conv_integer('0'&up_data_freq(31 downto 1))-1;
+            elsif cnt_cyclex>=up_data_freq-1 then
+                cnt_cyclex<=0;
+            else
+                cnt_cyclex<=cnt_cyclex+1;
+            end if;
+        else
+            cnt_cyclex<=1;
+        end if;
+    end if;
+end process;
+
 process(clkin,rst_n)
 begin
     if rst_n='0' then
