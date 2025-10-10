@@ -183,6 +183,8 @@ attribute mark_debug of usb_rx_buf_vld   :signal is "true";
 attribute mark_debug of usb_rx_buf_type  :signal is "true";
 attribute mark_debug of work_mod_i       :signal is "true";
 attribute mark_debug of cnt_cycle        :signal is "true";
+attribute mark_debug of lock_data_en     :signal is "true";
+attribute mark_debug of lock_data_en_pos :signal is "true";
 
 
 

@@ -325,6 +325,14 @@ create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe16]
 set_property port_width 32 [get_debug_ports u_ila_0/probe16]
 connect_debug_port u_ila_0/probe16 [get_nets [list {ins_usb_pro_deal/cnt_cycle[0]} {ins_usb_pro_deal/cnt_cycle[1]} {ins_usb_pro_deal/cnt_cycle[2]} {ins_usb_pro_deal/cnt_cycle[3]} {ins_usb_pro_deal/cnt_cycle[4]} {ins_usb_pro_deal/cnt_cycle[5]} {ins_usb_pro_deal/cnt_cycle[6]} {ins_usb_pro_deal/cnt_cycle[7]} {ins_usb_pro_deal/cnt_cycle[8]} {ins_usb_pro_deal/cnt_cycle[9]} {ins_usb_pro_deal/cnt_cycle[10]} {ins_usb_pro_deal/cnt_cycle[11]} {ins_usb_pro_deal/cnt_cycle[12]} {ins_usb_pro_deal/cnt_cycle[13]} {ins_usb_pro_deal/cnt_cycle[14]} {ins_usb_pro_deal/cnt_cycle[15]} {ins_usb_pro_deal/cnt_cycle[16]} {ins_usb_pro_deal/cnt_cycle[17]} {ins_usb_pro_deal/cnt_cycle[18]} {ins_usb_pro_deal/cnt_cycle[19]} {ins_usb_pro_deal/cnt_cycle[20]} {ins_usb_pro_deal/cnt_cycle[21]} {ins_usb_pro_deal/cnt_cycle[22]} {ins_usb_pro_deal/cnt_cycle[23]} {ins_usb_pro_deal/cnt_cycle[24]} {ins_usb_pro_deal/cnt_cycle[25]} {ins_usb_pro_deal/cnt_cycle[26]} {ins_usb_pro_deal/cnt_cycle[27]} {ins_usb_pro_deal/cnt_cycle[28]} {ins_usb_pro_deal/cnt_cycle[29]} {ins_usb_pro_deal/cnt_cycle[30]} {ins_usb_pro_deal/cnt_cycle[31]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe17]
+set_property port_width 1 [get_debug_ports u_ila_0/probe17]
+connect_debug_port u_ila_0/probe17 [get_nets [list ins_usb_pro_deal/lock_data_en_pos]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe18]
+set_property port_width 1 [get_debug_ports u_ila_0/probe18]
+connect_debug_port u_ila_0/probe18 [get_nets [list ins_usb_pro_deal/lock_data_en]]
 
 
 
