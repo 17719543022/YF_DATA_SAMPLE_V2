@@ -202,7 +202,17 @@ begin
          m0_num_half<='0';
     else
         if rising_edge(clkin) then  
-            if m0_num = X"24" then
+            if m0_num_change='1' then
+                s1<=0;
+                adc_check_sus<=(others=>'0');
+                err_num<=(others=>'0');
+                ad_cfg_over<='0';
+                s_axis_trst<='0';
+                cnt:=0;
+                check_data_n<='1';
+                ad_data_buf_vld_i<='0';
+                m0_num_half<='0';
+            elsif m0_num=X"24" then
                 case s1 is
                     when 0=>
                         s_axis_trst<='1';
@@ -399,17 +409,7 @@ begin
                         end if;
                         
                     when 8=>
-                        if m0_num_change='1' then
-                            s1<=0;
-                            adc_check_sus<=(others=>'0');
-                            err_num<=(others=>'0');
-                            ad_cfg_over<='0';
-                            s_axis_trst<='0';
-                            cnt:=0;
-                            check_data_n<='1';
-                            ad_data_buf_vld_i<='0';
-                            m0_num_half<='0';
-                        elsif spi_miso=resv_data(device_num-1 downto 0) then  ---miso='0'
+                        if spi_miso=resv_data(device_num-1 downto 0) then  ---miso='0'
                             s1<=9;
                             err_num<=(others=>'0');
                         elsif sample_en='1' then                        ---出现采集错误，ADC不能进行正常的通信，给出错误标识
@@ -450,17 +450,7 @@ begin
                     when 13=>
                         rx_num<=0;
                         ad_data_buf_vld_i<='0';
-                        if m0_num_change='1' then
-                            s1<=0;
-                            adc_check_sus<=(others=>'0');
-                            err_num<=(others=>'0');
-                            ad_cfg_over<='0';
-                            s_axis_trst<='0';
-                            cnt:=0;
-                            check_data_n<='1';
-                            ad_data_buf_vld_i<='0';
-                            m0_num_half<='0';
-                        elsif sample_en='1' or rx_num>=4 then
+                        if sample_en='1' or rx_num>=4 then
                             s1<=5;
                         else
                             s1<=s1;
@@ -469,7 +459,7 @@ begin
                     when others=>
                         s1<=0;
                 end case;
-            elsif m0_num = X"12" then
+            elsif m0_num=X"12" then
                 case s1 is
                     when 0=>
                         s_axis_trst<='1';
@@ -667,17 +657,7 @@ begin
                         end if;
                         
                     when 8=>
-                        if m0_num_change='1' then
-                            s1<=0;
-                            adc_check_sus<=(others=>'0');
-                            err_num<=(others=>'0');
-                            ad_cfg_over<='0';
-                            s_axis_trst<='0';
-                            cnt:=0;
-                            check_data_n<='1';
-                            ad_data_buf_vld_i<='0';
-                            m0_num_half<='0';
-                        elsif spi_miso=resv_data(device_num-1 downto 0) then  ---miso='0'
+                        if spi_miso=resv_data(device_num-1 downto 0) then  ---miso='0'
                             s1<=9;
                             err_num<=(others=>'0');
                         elsif sample_en='1' then                        ---出现采集错误，ADC不能进行正常的通信，给出错误标识
@@ -718,17 +698,7 @@ begin
                     when 13=>
                         rx_num<=0;
                         ad_data_buf_vld_i<='0';
-                        if m0_num_change='1' then
-                            s1<=0;
-                            adc_check_sus<=(others=>'0');
-                            err_num<=(others=>'0');
-                            ad_cfg_over<='0';
-                            s_axis_trst<='0';
-                            cnt:=0;
-                            check_data_n<='1';
-                            ad_data_buf_vld_i<='0';
-                            m0_num_half<='0';
-                        elsif sample_en='1' or rx_num>=4 then
+                        if sample_en='1' or rx_num>=4 then
                             s1<=5;
                         else
                             s1<=s1;
