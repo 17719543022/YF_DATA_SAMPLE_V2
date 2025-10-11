@@ -116,6 +116,8 @@ signal cnt_trigger:integer range 0 to 2047;
 signal cnt_rx:integer range 0 to 2047;
 signal cnt_tx:integer range 0 to 2047;
 signal cnt_cycle:integer;
+signal cnt_cycle_lock:integer;
+signal cnt_cycle_sample:integer;
 signal s1    :integer range 0 to 3;
 signal s2    :integer range 0 to 7;
 
@@ -183,6 +185,8 @@ attribute mark_debug of usb_rx_buf_vld   :signal is "true";
 attribute mark_debug of usb_rx_buf_type  :signal is "true";
 attribute mark_debug of work_mod_i       :signal is "true";
 attribute mark_debug of cnt_cycle        :signal is "true";
+attribute mark_debug of cnt_cycle_lock   :signal is "true";
+attribute mark_debug of cnt_cycle_sample :signal is "true";
 attribute mark_debug of lock_data_en     :signal is "true";
 attribute mark_debug of lock_data_en_pos :signal is "true";
 
@@ -617,7 +621,7 @@ begin
         if usb_rx_buf_vld='1' and usb_rx_buf_type=X"13" then
             trigger_sample_cmd<='1';
         elsif work_mod_i=X"50" then
-            if cnt_cycle=10 then
+            if cnt_cycle=cnt_cycle_sample then
                 trigger_sample_cmd<='1';    ---发送采集命令    --
             else
                 trigger_sample_cmd<='0';
@@ -679,7 +683,7 @@ begin
                 cnt_cycle<=cnt_cycle+1;
             end if;
             
-            if cnt_cycle=up_data_freq-1 then
+            if cnt_cycle=cnt_cycle_lock then
                 lock_data_en<='1';
             elsif s2=1 then
                 lock_data_en<='0';
@@ -707,6 +711,22 @@ begin
     end if;
 end process;
 lock_data_en_pos<=lock_data_en and not lock_data_en_d1;
+
+process(clkin,rst_n)
+begin
+    if rst_n='0' then
+        cnt_cycle_lock<=2;
+        cnt_cycle_sample<=12;
+    elsif rising_edge(clkin) then
+        if ad_data_buf_vld='1' then
+            cnt_cycle_lock<=(cnt_cycle+conv_integer('0'&up_data_freq(31 downto 1))-320) MOD conv_integer(up_data_freq);
+            cnt_cycle_sample<=(cnt_cycle+conv_integer('0'&up_data_freq(31 downto 1))-300) MOD conv_integer(up_data_freq);
+        else
+            cnt_cycle_lock<=cnt_cycle_lock;
+            cnt_cycle_sample<=cnt_cycle_sample;
+        end if;
+    end if;
+end process;
 
 
 -----------------数据上传回复/自检回复------------------------------------------------------------------
