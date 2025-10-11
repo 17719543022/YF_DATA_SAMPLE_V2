@@ -236,7 +236,6 @@ generic(device_num:integer:=18);
     commom_sig        :in std_logic;
     cfg_data_en       :in std_logic;    
     trigger_sample_cmd:in std_logic;    
-    trigger_sample_cmx:in std_logic;
 ------------------------------------------    
     channel_check_en  :in std_logic;
     channel_check     :in std_logic_vector(35 downto 0); 
@@ -289,7 +288,6 @@ component usb_pro_deal is
     commom_sig        :out std_logic;
     cfg_data_en       :out std_logic;    
     trigger_sample_cmd:out std_logic;    
-    trigger_sample_cmx:out std_logic;
 ---------------×Ô¼ìÃüÁî---------------------------    
     channel_check_en  :out std_logic;
     channel_check0    :out std_logic_vector(35 downto 0);
@@ -337,7 +335,6 @@ signal    m0_num            :std_logic_vector(7 downto 0);
 signal    commom_sig        :std_logic;
 signal    cfg_data_en       :std_logic;    
 signal    trigger_sample_cmd:std_logic;     
-signal    trigger_sample_cmx:std_logic;
 signal    channel_check_en  :std_logic;
 signal    channel_check     :std_logic_vector(35 downto 0);
 signal    rst_n_usb         :std_logic;    
@@ -530,7 +527,6 @@ ins_drv:drv_top port map(
     commom_sig         =>   commom_sig          ,
     cfg_data_en        =>   cfg_data_en         ,
     trigger_sample_cmd =>   trigger_sample_cmd  ,
-    trigger_sample_cmx =>   trigger_sample_cmx  ,
     ------------------ =>   ------------------  ,
     channel_check_en   =>   channel_check_en    ,
     channel_check      =>   channel_check       ,
@@ -576,7 +572,6 @@ ins_usb_pro_deal:usb_pro_deal port map(
     commom_sig             =>   commom_sig               ,
     cfg_data_en            =>   cfg_data_en              ,
     trigger_sample_cmd     =>   trigger_sample_cmd       ,
-    trigger_sample_cmx     =>   trigger_sample_cmx       ,
     channel_check_en       =>   channel_check_en         ,
     channel_check0         =>   channel_check            ,
     adui_data              =>   adui_data                ,
