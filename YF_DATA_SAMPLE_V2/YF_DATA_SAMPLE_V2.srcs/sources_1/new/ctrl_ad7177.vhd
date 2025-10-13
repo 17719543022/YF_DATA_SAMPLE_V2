@@ -593,7 +593,6 @@ begin
                             s1<=s1;
                             s_axis_tvalid<='1';
                         end if;     
-                        rx_num<=0;
 
                     -- when 13=>
                         -- s_axis_tnum<=conv_std_logic_vector(24,16);
@@ -633,7 +632,6 @@ begin
                             s_axis_tvalid<='1';
                         end if;  
                         check_data_n<='1';
-                        rx_num<=0;
     -------------------------------------------------------------------
                     when 6=>
                         ad_cfg_over<='1';
@@ -653,10 +651,6 @@ begin
                         if spi_miso=resv_data(device_num-1 downto 0) then  ---miso='0'
                             s1<=9;
                             err_num<=(others=>'0');
-                        elsif sample_en='1' then                        ---出现采集错误，ADC不能进行正常的通信，给出错误标识
-                            s1<=9;
-                            rx_num<=4;
-                            err_num<=spi_miso;
                         end if;
 
                     when 9=>
@@ -665,7 +659,6 @@ begin
                         s_axis_tuser<=spi_rd_cmd;  
                         if s_axis_tvalid='1' and s_axis_tready='1' then
                             s1<=10;
-                            rx_num<=rx_num+1;
                             s_axis_tvalid<='0';
                         else
                             s1<=s1;
@@ -675,21 +668,16 @@ begin
                     
                     when 10=>
                         if spi_rd_vld='1' then
-                            if rx_num>=2 then
-                                s1<=13;
-                                ad_data_buf_vld_i<='1';
-                            else
-                                s1<=6;
-                            end if;
+                            s1<=13;
+                            ad_data_buf_vld_i<='1';
                         else
                             s1<=s1;
                         end if;
                     
                         
                     when 13=>
-                        rx_num<=0;
                         ad_data_buf_vld_i<='0';
-                        if sample_en='1' or rx_num>=4 then
+                        if sample_en='1' then
                             s1<=5;
                         else
                             s1<=s1;
