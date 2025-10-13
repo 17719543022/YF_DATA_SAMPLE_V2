@@ -329,6 +329,14 @@ create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe17]
 set_property port_width 1 [get_debug_ports u_ila_0/probe17]
 connect_debug_port u_ila_0/probe17 [get_nets [list ins_usb_pro_deal/lock_data_en]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe18]
+set_property port_width 1 [get_debug_ports u_ila_0/probe18]
+connect_debug_port u_ila_0/probe18 [get_nets [list ins_drv/ins_ad_drv/check_data_n]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe19]
+set_property port_width 1 [get_debug_ports u_ila_0/probe19]
+connect_debug_port u_ila_0/probe19 [get_nets [list ins_drv/ins_ad_drv/spi_cs]]
 
 
 

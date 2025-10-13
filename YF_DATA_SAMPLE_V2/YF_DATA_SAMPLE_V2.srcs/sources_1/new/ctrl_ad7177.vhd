@@ -148,6 +148,8 @@ signal	ad_data_buf_vld_i		: std_logic;
 attribute mark_debug:string;
 attribute mark_debug of spi_mosi:signal is "true";
 attribute mark_debug of spi_cs_i:signal is "true";
+attribute mark_debug of spi_cs  :signal is "true";
+attribute mark_debug of check_data_n:signal is "true";
 attribute mark_debug of spi_clk	:signal is "true";
 attribute mark_debug of spi_miso:signal is "true";
 attribute mark_debug of spi_rd_vld        :signal is "true";
@@ -512,7 +514,7 @@ begin
                     when 14=>
                         s_axis_tnum<=conv_std_logic_vector(24,16);
                         if cnt_tx=0 then
-                            s_axis_tdata<=X"01_0000"&resv_data(15 downto 0); --配置使用外部基准源 
+                            s_axis_tdata<=X"01_8000"&resv_data(15 downto 0); --配置使用外部基准源 
                         elsif cnt_tx=1 then
                             s_axis_tdata<=X"20_1f00"&resv_data(15 downto 0); --配置使用外部基准源 
                         elsif cnt_tx=2 then
@@ -559,7 +561,7 @@ begin
                     
                     when 4=>
                         s_axis_tnum<=conv_std_logic_vector(24,16);
-                        s_axis_tdata<=X"02_0040"&resv_data(15 downto 0); --使能data_stat模式 24位转换结果    
+                        s_axis_tdata<=X"02_00c0"&resv_data(15 downto 0); --使能data_stat模式 24位转换结果    
                         s_axis_tuser<=spi_wr_cmd;  
                         if s_axis_tvalid='1' and s_axis_tready='1' then
                             s1<=11;
@@ -593,7 +595,6 @@ begin
                             s1<=s1;
                             s_axis_tvalid<='1';
                         end if;     
-                        rx_num<=0;
 
                     -- when 13=>
                         -- s_axis_tnum<=conv_std_logic_vector(24,16);
@@ -622,20 +623,21 @@ begin
                         
      
                     when 5=>
-                        s_axis_tnum<=conv_std_logic_vector(24,16);
-                        s_axis_tdata<=X"01_8010"&resv_data(15 downto 0); --配置为单次转换模式 
-                        s_axis_tuser<=spi_wr_cmd;                    
-                        if s_axis_tvalid='1' and s_axis_tready='1' then
-                            s1<=6;
-                            s_axis_tvalid<='0';
-                        else
-                            s1<=s1;
-                            s_axis_tvalid<='1';
-                        end if;  
+                        --s_axis_tnum<=conv_std_logic_vector(24,16);
+                        --s_axis_tdata<=X"01_8010"&resv_data(15 downto 0); --配置为单次转换模式 
+                        --s_axis_tuser<=spi_wr_cmd;                    
+                        --if s_axis_tvalid='1' and s_axis_tready='1' then
+                        --    s1<=6;
+                        --    s_axis_tvalid<='0';
+                        --else
+                        --    s1<=s1;
+                        --    s_axis_tvalid<='1';
+                        --end if;  
+                        s1<=6;
                         check_data_n<='1';
-                        rx_num<=0;
     -------------------------------------------------------------------
                     when 6=>
+                        ad_data_buf_vld_i<='0';
                         ad_cfg_over<='1';
                         check_data_n<='0';
                         cnt:=0;
@@ -650,12 +652,15 @@ begin
                         end if;
                         
                     when 8=>
-                        if spi_miso=resv_data(device_num-1 downto 0) then  ---miso='0'
+                        --if spi_miso=resv_data(device_num-1 downto 0) then  ---miso='0'
+                        --    s1<=9;
+                        --    err_num<=(others=>'0');
+                        --elsif sample_en='1' then                        ---出现采集错误，ADC不能进行正常的通信，给出错误标识
+                        --    s1<=9;
+                        --    err_num<=spi_miso;
+                        --end if;
+                        if sample_en='1' then
                             s1<=9;
-                            err_num<=(others=>'0');
-                        elsif sample_en='1' then                        ---出现采集错误，ADC不能进行正常的通信，给出错误标识
-                            s1<=9;
-                            rx_num<=4;
                             err_num<=spi_miso;
                         end if;
 
@@ -665,7 +670,6 @@ begin
                         s_axis_tuser<=spi_rd_cmd;  
                         if s_axis_tvalid='1' and s_axis_tready='1' then
                             s1<=10;
-                            rx_num<=rx_num+1;
                             s_axis_tvalid<='0';
                         else
                             s1<=s1;
@@ -675,21 +679,22 @@ begin
                     
                     when 10=>
                         if spi_rd_vld='1' then
-                            if rx_num>=2 then
-                                s1<=13;
-                                ad_data_buf_vld_i<='1';
-                            else
-                                s1<=6;
-                            end if;
+                            --if rx_num>=2 then
+                            --    s1<=13;
+                            --    ad_data_buf_vld_i<='1';
+                            --else
+                            --    s1<=6;
+                            --end if;
+                            s1<=6;
+                            ad_data_buf_vld_i<='1';
                         else
                             s1<=s1;
                         end if;
                     
                         
                     when 13=>
-                        rx_num<=0;
                         ad_data_buf_vld_i<='0';
-                        if sample_en='1' or rx_num>=4 then
+                        if sample_en='1' then
                             s1<=5;
                         else
                             s1<=s1;
