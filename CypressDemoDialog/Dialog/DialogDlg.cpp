@@ -53,8 +53,6 @@ END_MESSAGE_MAP()
 
 
 // CDialogDlg 对话框
-
-
 CDialogDlg::CDialogDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_DIALOG, pParent)
 {
@@ -79,6 +77,8 @@ void CDialogDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_COMBO_DEVICES, m_comboDevices);
 	DDX_Control(pDX, IDC_BUTTON_ADC_SAMPLE, m_buttonADCSample);
+	DDX_Control(pDX, IDC_CUSTOM_SHOW, m_ChartCtrl);
+	DDX_Control(pDX, IDC_EDIT_DL_NUM, m_edtDlNum);
 }
 
 BEGIN_MESSAGE_MAP(CDialogDlg, CDialogEx)
@@ -90,8 +90,20 @@ BEGIN_MESSAGE_MAP(CDialogDlg, CDialogEx)
 	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
+#define DATA_SHOW_LENGTH 1000
+#define IDTIMER1 1
+
+int g_DlNum = 1;
+unsigned short g_xBuff[DATA_SHOW_LENGTH] = { 0 };
+long g_yBuff[DATA_SHOW_LENGTH] = { 0 };
+double XValues[DATA_SHOW_LENGTH] = { 0 };
+double YValues[DATA_SHOW_LENGTH] = { 0 };
 bool bKInstructionSend = FALSE;
-UINT16 writeIndex = 0;
+UINT16 g_writeIndex = 0;
+//UINT16 writeIndex = 0;
+UCHAR g_frameBuffer[1024] = { 0 };
+UINT16 g_frameValidLength = 0;
+SYSTEMTIME objStartTime;
 
 // CDialogDlg 消息处理程序
 
@@ -125,12 +137,29 @@ BOOL CDialogDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+	CChartStandardAxis* pBottomAxis =
+		m_ChartCtrl.CreateStandardAxis(CChartCtrl::BottomAxis);
+	pBottomAxis->SetMinMax(0, DATA_SHOW_LENGTH);
+	CChartStandardAxis* pLeftAxis =
+		m_ChartCtrl.CreateStandardAxis(CChartCtrl::LeftAxis);
+	pLeftAxis->SetMinMax(-1000, 1000);
+	//CChartStandardAxis* pTopAxis =
+	//	m_ChartCtrl.CreateStandardAxis(CChartCtrl::TopAxis);
+	//pTopAxis->SetMinMax(0, DATA_SHOW_LENGTH);
+	//CChartStandardAxis* pRightAxis =
+	//	m_ChartCtrl.CreateStandardAxis(CChartCtrl::RightAxis);
+	//pRightAxis->SetMinMax(-1000, 1000);
+	pLineSeries = m_ChartCtrl.CreateLineSerie(false, false);
+
 	m_selectedUSBDevice = new CCyUSBDevice(this->m_hWnd, CYUSBDRV_GUID, true);
 	this->m_buttonADCSample.EnableWindow(FALSE);
 	SurveyExistingDevices();
 	EnumerateEndpointForTheSelectedDevice();
 
 	UpdateData(FALSE);
+
+	DataBuffInit();
+	ChartCtrlInit();
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -317,60 +346,18 @@ bool CDialogDlg::EnumerateEndpointForTheSelectedDevice()
 	return TRUE;
 }
 
-
-void CDialogDlg::ConfigADCSamplingRate()
-{
-	CString strOutData = m_strEndPointEnumerate0x02;
-	TCHAR* pEnd;
-	BYTE outEpAddress = 0x0;
-
-	// Extract the endpoint addresses........
-	strOutData = strOutData.Right(4);
-
-	//outEpAddress = (BYTE)wcstoul(strOutData.GetBuffer(0), &pEnd, 16);
-	outEpAddress = strtol(strOutData, &pEnd, 16);
-	CCyUSBEndPoint* epBulkOut = m_selectedUSBDevice->EndPointOf(outEpAddress);
-
-	if (epBulkOut == NULL) return;
-
-	//
-	// Get the max packet size (USB Frame Size).
-	// For bulk burst transfer, this size represent bulk burst size.
-	// Transfer size is now multiple USB frames defined by PACKETS_PER_TRANSFER
-	//
-	UCHAR QUEUE_SIZE = 1;
-	UCHAR PACKETS_PER_TRANSFER = 1;
-	long totalOutTransferSize = epBulkOut->MaxPktSize * PACKETS_PER_TRANSFER;
-	epBulkOut->SetXferSize(totalOutTransferSize);
-
-	OVERLAPPED  outOvLap;
-	UCHAR* bufferOutput = new UCHAR[totalOutTransferSize];
-	outOvLap.hEvent = CreateEvent(NULL, false, false, NULL);
-
-	CString strAmpDetectCommand = "@Z000200005dc008&Z000200005dc008#0";
-	long writeLength = strAmpDetectCommand.GetLength();
-	for (int nCount = 0; nCount < strAmpDetectCommand.GetLength(); nCount++)
-	{
-		bufferOutput[nCount] = strAmpDetectCommand[nCount];
-	}
-
-	epBulkOut->TimeOut = TIMEOUT_PER_TRANSFER_MILLI_SEC;
-
-	// Mark the start time
-	/*SYSTEMTIME objStartTime;
-	GetSystemTime(&objStartTime);*/
-
-	epBulkOut->XferData(bufferOutput, writeLength);
-
-	// Bail out......
-	delete[] bufferOutput;
-	CloseHandle(outOvLap.hEvent);
-}
-
-
 void CDialogDlg::OnBnClickedButtonAdcSample()
 {
-	writeIndex = 0;
+	char ch1[10];
+	GetDlgItem(IDC_EDIT_DL_NUM)->GetWindowText(ch1, 10);
+	g_DlNum = atoi(ch1);
+	if ((g_DlNum < 1) || (g_DlNum > 36))
+	{
+		AfxMessageBox(_T("请确认输入了正确的导联号！！！"));
+		return;
+	}
+
+	//writeIndex = 0;
 
 	if (m_bButtonADCSampleClicked == FALSE)
 	{
@@ -378,9 +365,9 @@ void CDialogDlg::OnBnClickedButtonAdcSample()
 
 		m_buttonADCSample.SetWindowText("停止");
 
-		//ConfigADCSamplingRate();
-
 		m_pThread = AfxBeginThread((AFX_THREADPROC)PerformADCSampling, (LPVOID)this);
+
+		SetTimer(IDTIMER1, 100, NULL);
 	}
 	else
 	{
@@ -390,9 +377,78 @@ void CDialogDlg::OnBnClickedButtonAdcSample()
 
 		WaitForSingleObject(m_pThread->m_hThread, 100);
 		m_pThread = NULL;
+
+		KillTimer(IDTIMER1);
 	}
 }
 
+void CDialogDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	switch (nIDEvent)
+	{
+	case IDTIMER1:
+	{
+		/* void CChartDemoDlg::OnAddseries() */
+		pLineSeries->SetWidth(1);
+		pLineSeries->SetPenStyle(0);
+		pLineSeries->SetName(_T("波形"));
+		pLineSeries->SetColor(255); //red
+		for (int i = 0; i < DATA_SHOW_LENGTH; i++)
+		{
+			YValues[i] = (((g_yBuff[i] * 2500.0) / pow(2, 23)) / 3.57);
+		}
+		pLineSeries->SetPoints(XValues, YValues, DATA_SHOW_LENGTH);
+
+		/* void CChartDemoDlg::OnAxisAutomaticCheck() */
+		CChartAxis* pAxis = m_ChartCtrl.GetLeftAxis();
+
+		double MinVal = YValues[0], MaxVal = YValues[0];
+		for (int i = 0; i < DATA_SHOW_LENGTH; i++)
+		{
+			if (YValues[i] < MinVal)
+			{
+				MinVal = YValues[i];
+			}
+		}
+		for (int i = 0; i < DATA_SHOW_LENGTH; i++)
+		{
+			if (YValues[i] > MaxVal)
+			{
+				MaxVal = YValues[i];
+			}
+		}
+
+		pAxis->SetAutomatic(false);
+		pAxis->SetMinMax(MinVal - (MaxVal - MinVal) / 10, MaxVal + (MaxVal - MinVal) / 10);
+
+		m_ChartCtrl.RefreshCtrl();
+
+		break;
+	}
+	default:
+		break;
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+// 显示点数据包初始化
+void CDialogDlg::DataBuffInit()
+{
+	// TODO: 在此处添加实现代码.
+	for (int i = 0; i < DATA_SHOW_LENGTH; i++)
+	{
+		g_xBuff[i] = i + 1;
+
+		XValues[i] = i + 1;
+	}
+}
+
+// 初始化画图界面窗口
+void CDialogDlg::ChartCtrlInit()
+{
+
+}
 
 DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 {
@@ -458,12 +514,12 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 	bufferOutput[3] = 0xCD;
 	bufferOutput[4] = 0x10;
 	bufferOutput[5] = 0x50;
-	bufferOutput[6] = 0x50;
-	bufferOutput[7] = 0xC3;
-	bufferOutput[8] = 0x00;
+	bufferOutput[6] = 0xA0;
+	bufferOutput[7] = 0x86;
+	bufferOutput[8] = 0x01;
 	bufferOutput[9] = 0x00;
 	bufferOutput[10] = 0x01;
-	bufferOutput[11] = 0x00;
+	bufferOutput[11] = 0x24;
 	bufferOutput[12] = 0x00;
 	bufferOutput[13] = 0x00;
 	bufferOutput[14] = 0x00;
@@ -543,7 +599,6 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 	{
 		if ((fp == NULL) && (pThis->m_bButtonADCSampleClicked == TRUE))
 		{
-			char fileName[60] = { 0 };
 			fp = fopen("../samples/data.txt", "w");
 		}
 
@@ -567,28 +622,75 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 		////////////Read the trasnferred data from the device///////////////////////////////////////
 		epBulkIn->FinishDataXfer(buffersInput[nCount], readLength, &inOvLap[nCount], contextsInput[nCount]);
 
-		for (int mCount = 0; mCount < readLength; mCount++)
+		//for (int mCount = 0; mCount < readLength; mCount++)
+		//{
+		//	fprintf(fp, "%02X", buffersInput[nCount][mCount]);
+		//
+		//	//if ((mCount + 1) % 16 == 0)
+		//	//{
+		//	//	fprintf(fp, "\r");
+		//	//}
+		//	//else
+		//	//{
+		//	//	fprintf(fp, "  ");
+		//	//}
+		//
+		//	writeIndex = (writeIndex + 1) % 500;
+		//
+		//	if (writeIndex == 0)
+		//	{
+		//		fprintf(fp, "\r");
+		//	}
+		//	else
+		//	{
+		//		fprintf(fp, "  ");
+		//	}
+		//}
+
+		memmove(&g_frameBuffer[g_frameValidLength], buffersInput[nCount], readLength);
+		g_frameValidLength += readLength;
+
+		for (int nCount = 0; nCount < 2; nCount++)
 		{
-			fprintf(fp, "%02X", buffersInput[nCount][mCount]);
-
-			//if ((mCount + 1) % 16 == 0)
-			//{
-			//	fprintf(fp, "\r");
-			//}
-			//else
-			//{
-			//	fprintf(fp, "  ");
-			//}
-
-			writeIndex = (writeIndex + 1) % 500;
-
-			if (writeIndex == 0)
+			for (int mCount = 0; mCount + 500 - 1 < g_frameValidLength; mCount++)
 			{
-				fprintf(fp, "\r");
-			}
-			else
-			{
-				fprintf(fp, "  ");
+				if (g_frameBuffer[mCount] == 0xAA)
+				{
+					if (g_frameBuffer[mCount + 1] == 0x55)
+					{
+						if (g_frameBuffer[mCount + 2] == 0xCD)
+						{
+							if (g_frameBuffer[mCount + 3] == 0xCB)
+							{
+								if (g_frameBuffer[mCount + 4] == 0x10)
+								{
+									if (g_frameBuffer[mCount + 500 - 1] == 0x5C)
+									{
+										UINT32 frameNumber = 0;
+										frameNumber += g_frameBuffer[mCount + 5];
+										frameNumber += g_frameBuffer[mCount + 6] << 8;
+										frameNumber += g_frameBuffer[mCount + 7] << 16;
+										frameNumber += g_frameBuffer[mCount + 8] << 24;
+										fprintf(fp, "frameNumber: %lu\r", frameNumber);
+
+										g_yBuff[g_writeIndex] = g_frameBuffer[mCount + 9 + (g_DlNum - 1) * 3];
+										g_yBuff[g_writeIndex] += g_frameBuffer[mCount + 9 + (g_DlNum - 1) * 3 + 1] << 8;
+										g_yBuff[g_writeIndex] += g_frameBuffer[mCount + 9 + (g_DlNum - 1) * 3 + 2] << 16;
+										if (g_yBuff[g_writeIndex] > 8388608)
+										{
+											g_yBuff[g_writeIndex] -= 8388608 * 2;
+										}
+
+										g_writeIndex = (g_writeIndex + 1) % DATA_SHOW_LENGTH;
+
+										g_frameValidLength -= 500;
+										memmove(g_frameBuffer, &g_frameBuffer[500], g_frameValidLength);
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 

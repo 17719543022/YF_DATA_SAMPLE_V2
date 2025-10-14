@@ -13,6 +13,7 @@
 #define IDC_COMBO_OUT_ENDPOINTS         1002
 #define IDC_EDIT1                       1003
 #define IDC_EDIT_OUT_COMMAND            1003
+#define IDC_EDIT_DL_NUM                 1003
 #define IDC_BUTTON1                     1007
 #define IDC_BUTTON2                     1008
 #define IDC_BUTTON_IN                   1008

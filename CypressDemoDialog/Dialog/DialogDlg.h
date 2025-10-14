@@ -4,6 +4,9 @@
 
 #pragma once
 #include "CyAPI.h"
+#include "ChartCtrl/ChartCtrl.h"
+#include "ChartCtrl/ChartAxisLabel.h"
+#include "ChartCtrl/ChartLineSerie.h"
 
 // CDialogDlg 对话框
 class CDialogDlg : public CDialogEx
@@ -37,11 +40,13 @@ protected:
 public:
 	afx_msg void OnCbnSelchangeComboDevices();
 	afx_msg void OnBnClickedButtonAdcSample();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 private:
 	bool SurveyExistingDevices();
 	bool EnumerateEndpointForTheSelectedDevice();
-	void ConfigADCSamplingRate();
 	static DWORD WINAPI PerformADCSampling(LPVOID lParam);
+	void DataBuffInit();
+	void ChartCtrlInit();
 	CComboBox m_comboDevices;
 	CCyUSBDevice* m_selectedUSBDevice;
 	CButton m_buttonADCSample;
@@ -49,4 +54,7 @@ private:
 	CString m_strEndPointEnumerate0x86;
 	CWinThread* m_pThread;
 	bool m_bButtonADCSampleClicked;
+	CChartCtrl m_ChartCtrl;
+	CChartLineSerie* pLineSeries;
+	CEdit m_edtDlNum;
 };
