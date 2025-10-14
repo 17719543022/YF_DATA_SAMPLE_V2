@@ -185,7 +185,8 @@ INS_SPI_DRV:SPI_MASTER_V1 PORT MAP(
 );
 -------------------------------------------------------------------
 
-spi_cs<=spi_cs_i and check_data_n;
+--spi_cs<=spi_cs_i and check_data_n;
+spi_cs<=spi_cs_i when (m0_num=X"12") else (spi_cs_i and check_data_n);
 
 process(clkin,rst_n)
 variable cnt:integer;
@@ -570,7 +571,7 @@ begin
                             s1<=s1;
                             s_axis_tvalid<='1';
                         end if;  
-    ----------------------多通道使能-----------------------------------------------------                    
+    ----------------------单通道使能-----------------------------------------------------
                     when 11=>
                         s_axis_tnum<=conv_std_logic_vector(24,16);
                         s_axis_tdata<=X"10_8001"&resv_data(15 downto 0); --使能data_stat模式 24位转换结果    
@@ -634,12 +635,10 @@ begin
                         --    s_axis_tvalid<='1';
                         --end if;  
                         s1<=6;
-                        check_data_n<='1';
     -------------------------------------------------------------------
                     when 6=>
                         ad_data_buf_vld_i<='0';
                         ad_cfg_over<='1';
-                        check_data_n<='0';
                         cnt:=0;
                         s1<=7;
                     

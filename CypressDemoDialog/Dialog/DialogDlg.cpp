@@ -100,7 +100,7 @@ double XValues[DATA_SHOW_LENGTH] = { 0 };
 double YValues[DATA_SHOW_LENGTH] = { 0 };
 bool bKInstructionSend = FALSE;
 UINT16 g_writeIndex = 0;
-//UINT16 writeIndex = 0;
+UINT16 writeIndex = 0;
 UCHAR g_frameBuffer[1024] = { 0 };
 UINT16 g_frameValidLength = 0;
 SYSTEMTIME objStartTime;
@@ -357,7 +357,7 @@ void CDialogDlg::OnBnClickedButtonAdcSample()
 		return;
 	}
 
-	//writeIndex = 0;
+	writeIndex = 0;
 
 	if (m_bButtonADCSampleClicked == FALSE)
 	{
@@ -519,7 +519,7 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 	bufferOutput[8] = 0x01;
 	bufferOutput[9] = 0x00;
 	bufferOutput[10] = 0x01;
-	bufferOutput[11] = 0x24;
+	bufferOutput[11] = 0x12;
 	bufferOutput[12] = 0x00;
 	bufferOutput[13] = 0x00;
 	bufferOutput[14] = 0x00;
@@ -622,30 +622,30 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 		////////////Read the trasnferred data from the device///////////////////////////////////////
 		epBulkIn->FinishDataXfer(buffersInput[nCount], readLength, &inOvLap[nCount], contextsInput[nCount]);
 
-		//for (int mCount = 0; mCount < readLength; mCount++)
-		//{
-		//	fprintf(fp, "%02X", buffersInput[nCount][mCount]);
-		//
-		//	//if ((mCount + 1) % 16 == 0)
-		//	//{
-		//	//	fprintf(fp, "\r");
-		//	//}
-		//	//else
-		//	//{
-		//	//	fprintf(fp, "  ");
-		//	//}
-		//
-		//	writeIndex = (writeIndex + 1) % 500;
-		//
-		//	if (writeIndex == 0)
-		//	{
-		//		fprintf(fp, "\r");
-		//	}
-		//	else
-		//	{
-		//		fprintf(fp, "  ");
-		//	}
-		//}
+		for (int mCount = 0; mCount < readLength; mCount++)
+		{
+			fprintf(fp, "%02X", buffersInput[nCount][mCount]);
+		
+			//if ((mCount + 1) % 16 == 0)
+			//{
+			//	fprintf(fp, "\r");
+			//}
+			//else
+			//{
+			//	fprintf(fp, "  ");
+			//}
+		
+			writeIndex = (writeIndex + 1) % 500;
+		
+			if (writeIndex == 0)
+			{
+				fprintf(fp, "\r");
+			}
+			else
+			{
+				fprintf(fp, "  ");
+			}
+		}
 
 		memmove(&g_frameBuffer[g_frameValidLength], buffersInput[nCount], readLength);
 		g_frameValidLength += readLength;
@@ -666,19 +666,23 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 								{
 									if (g_frameBuffer[mCount + 500 - 1] == 0x5C)
 									{
-										UINT32 frameNumber = 0;
-										frameNumber += g_frameBuffer[mCount + 5];
-										frameNumber += g_frameBuffer[mCount + 6] << 8;
-										frameNumber += g_frameBuffer[mCount + 7] << 16;
-										frameNumber += g_frameBuffer[mCount + 8] << 24;
-										fprintf(fp, "frameNumber: %lu\r", frameNumber);
+										//UINT32 frameNumber = 0;
+										//frameNumber += g_frameBuffer[mCount + 5];
+										//frameNumber += g_frameBuffer[mCount + 6] << 8;
+										//frameNumber += g_frameBuffer[mCount + 7] << 16;
+										//frameNumber += g_frameBuffer[mCount + 8] << 24;
+										//fprintf(fp, "frameNumber: %lu\r", frameNumber);
 
 										g_yBuff[g_writeIndex] = g_frameBuffer[mCount + 9 + (g_DlNum - 1) * 3];
 										g_yBuff[g_writeIndex] += g_frameBuffer[mCount + 9 + (g_DlNum - 1) * 3 + 1] << 8;
 										g_yBuff[g_writeIndex] += g_frameBuffer[mCount + 9 + (g_DlNum - 1) * 3 + 2] << 16;
-										if (g_yBuff[g_writeIndex] > 8388608)
+										if (g_yBuff[g_writeIndex] == 0x800000)
 										{
-											g_yBuff[g_writeIndex] -= 8388608 * 2;
+											g_yBuff[g_writeIndex] -= 0x800000;
+										}
+										else if (g_yBuff[g_writeIndex] > 0x800000)
+										{
+											g_yBuff[g_writeIndex] -= 0x800000 * 2;
 										}
 
 										g_writeIndex = (g_writeIndex + 1) % DATA_SHOW_LENGTH;
