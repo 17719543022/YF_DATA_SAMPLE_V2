@@ -514,9 +514,9 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 	bufferOutput[3] = 0xCD;
 	bufferOutput[4] = 0x10;
 	bufferOutput[5] = 0x50;
-	bufferOutput[6] = 0xA0;
-	bufferOutput[7] = 0x86;
-	bufferOutput[8] = 0x01;
+	bufferOutput[6] = 0x88;
+	bufferOutput[7] = 0x13;
+	bufferOutput[8] = 0x00;
 	bufferOutput[9] = 0x00;
 	bufferOutput[10] = 0x01;
 	bufferOutput[11] = 0x12;
@@ -647,6 +647,12 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 			}
 		}
 
+		if (g_frameValidLength > 512)
+		{
+			memset(g_frameBuffer, 0x00, 1024);
+			g_frameValidLength = 0;
+		}
+
 		memmove(&g_frameBuffer[g_frameValidLength], buffersInput[nCount], readLength);
 		g_frameValidLength += readLength;
 
@@ -687,8 +693,8 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 
 										g_writeIndex = (g_writeIndex + 1) % DATA_SHOW_LENGTH;
 
-										g_frameValidLength -= 500;
-										memmove(g_frameBuffer, &g_frameBuffer[500], g_frameValidLength);
+										g_frameValidLength -= (500 + mCount);
+										memmove(g_frameBuffer, &g_frameBuffer[mCount + 500], g_frameValidLength);
 									}
 								}
 							}
