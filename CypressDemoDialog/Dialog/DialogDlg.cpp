@@ -79,6 +79,7 @@ void CDialogDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_ADC_SAMPLE, m_buttonADCSample);
 	DDX_Control(pDX, IDC_CUSTOM_SHOW, m_ChartCtrl);
 	DDX_Control(pDX, IDC_EDIT_DL_NUM, m_edtDlNum);
+	DDX_Control(pDX, IDC_EDIT_QUERY, m_edtDebug);
 }
 
 BEGIN_MESSAGE_MAP(CDialogDlg, CDialogEx)
@@ -103,6 +104,7 @@ UINT16 g_writeIndex = 0;
 UINT16 writeIndex = 0;
 UCHAR g_frameBuffer[1024] = { 0 };
 UINT16 g_frameValidLength = 0;
+UINT32 frameNumber = 0;
 SYSTEMTIME objStartTime;
 
 // CDialogDlg 消息处理程序
@@ -450,6 +452,13 @@ void CDialogDlg::ChartCtrlInit()
 
 }
 
+void CDialogDlg::LogScroll(CString log)
+{
+	int nLen = m_edtDebug.GetWindowTextLength();
+	m_edtDebug.SetSel(nLen, nLen);
+	m_edtDebug.ReplaceSel(log);
+}
+
 DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 {
 	CDialogDlg* pThis = (CDialogDlg*)lParam;
@@ -514,12 +523,12 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 	bufferOutput[3] = 0xCD;
 	bufferOutput[4] = 0x10;
 	bufferOutput[5] = 0x50;
-	bufferOutput[6] = 0x88;
-	bufferOutput[7] = 0x13;
+	bufferOutput[6] = 0x10;
+	bufferOutput[7] = 0x27;
 	bufferOutput[8] = 0x00;
 	bufferOutput[9] = 0x00;
 	bufferOutput[10] = 0x01;
-	bufferOutput[11] = 0x12;
+	bufferOutput[11] = 0x24;
 	bufferOutput[12] = 0x00;
 	bufferOutput[13] = 0x00;
 	bufferOutput[14] = 0x00;
@@ -622,30 +631,30 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 		////////////Read the trasnferred data from the device///////////////////////////////////////
 		epBulkIn->FinishDataXfer(buffersInput[nCount], readLength, &inOvLap[nCount], contextsInput[nCount]);
 
-		for (int mCount = 0; mCount < readLength; mCount++)
-		{
-			fprintf(fp, "%02X", buffersInput[nCount][mCount]);
-		
-			//if ((mCount + 1) % 16 == 0)
-			//{
-			//	fprintf(fp, "\r");
-			//}
-			//else
-			//{
-			//	fprintf(fp, "  ");
-			//}
-		
-			writeIndex = (writeIndex + 1) % 500;
-		
-			if (writeIndex == 0)
-			{
-				fprintf(fp, "\r");
-			}
-			else
-			{
-				fprintf(fp, "  ");
-			}
-		}
+		//for (int mCount = 0; mCount < readLength; mCount++)
+		//{
+		//	fprintf(fp, "%02X", buffersInput[nCount][mCount]);
+		//
+		//	//if ((mCount + 1) % 16 == 0)
+		//	//{
+		//	//	fprintf(fp, "\r");
+		//	//}
+		//	//else
+		//	//{
+		//	//	fprintf(fp, "  ");
+		//	//}
+		//
+		//	writeIndex = (writeIndex + 1) % 500;
+		//
+		//	if (writeIndex == 0)
+		//	{
+		//		fprintf(fp, "\r");
+		//	}
+		//	else
+		//	{
+		//		fprintf(fp, "  ");
+		//	}
+		//}
 
 		if (g_frameValidLength > 512)
 		{
@@ -672,12 +681,22 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 								{
 									if (g_frameBuffer[mCount + 500 - 1] == 0x5C)
 									{
-										//UINT32 frameNumber = 0;
-										//frameNumber += g_frameBuffer[mCount + 5];
-										//frameNumber += g_frameBuffer[mCount + 6] << 8;
-										//frameNumber += g_frameBuffer[mCount + 7] << 16;
-										//frameNumber += g_frameBuffer[mCount + 8] << 24;
-										//fprintf(fp, "frameNumber: %lu\r", frameNumber);
+										UINT32 frameNumberNext = 0;
+										frameNumberNext += g_frameBuffer[mCount + 5];
+										frameNumberNext += g_frameBuffer[mCount + 6] << 8;
+										frameNumberNext += g_frameBuffer[mCount + 7] << 16;
+										frameNumberNext += g_frameBuffer[mCount + 8] << 24;
+
+										if (frameNumberNext - 1 != frameNumber)
+										{
+											GetSystemTime(&objStartTime);
+											CString strTemp = _T("");
+											strTemp.Format("%d/%d/%d/%d:\t\tframeNumber: %d, frameNumberNext: %d\r\n"
+												, objStartTime.wHour, objStartTime.wMinute, objStartTime.wSecond, objStartTime.wMilliseconds, frameNumber, frameNumberNext);
+											//pThis->m_edtDebug.SetWindowTextA(strTemp);
+											pThis->LogScroll(strTemp);
+										}
+										frameNumber = frameNumberNext;
 
 										g_yBuff[g_writeIndex] = g_frameBuffer[mCount + 9 + (g_DlNum - 1) * 3];
 										g_yBuff[g_writeIndex] += g_frameBuffer[mCount + 9 + (g_DlNum - 1) * 3 + 1] << 8;

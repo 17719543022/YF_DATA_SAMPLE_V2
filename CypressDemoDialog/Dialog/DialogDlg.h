@@ -47,6 +47,7 @@ private:
 	static DWORD WINAPI PerformADCSampling(LPVOID lParam);
 	void DataBuffInit();
 	void ChartCtrlInit();
+	void LogScroll(CString log);
 	CComboBox m_comboDevices;
 	CCyUSBDevice* m_selectedUSBDevice;
 	CButton m_buttonADCSample;
@@ -57,4 +58,5 @@ private:
 	CChartCtrl m_ChartCtrl;
 	CChartLineSerie* pLineSeries;
 	CEdit m_edtDlNum;
+	CEdit m_edtDebug;
 };
