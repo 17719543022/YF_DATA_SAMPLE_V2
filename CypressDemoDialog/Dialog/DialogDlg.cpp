@@ -102,6 +102,9 @@ double YValues[DATA_SHOW_LENGTH] = { 0 };
 bool bKInstructionSend = FALSE;
 UINT16 g_writeIndex = 0;
 UINT16 writeIndex = 0;
+UCHAR g_historyBuffer[512 * 10] = { 0 };
+UINT16 g_historyIndex = 0;
+bool bBlockWork = TRUE;
 UCHAR g_frameBuffer[1024] = { 0 };
 UINT16 g_frameValidLength = 0;
 UINT32 frameNumber = 0;
@@ -381,6 +384,28 @@ void CDialogDlg::OnBnClickedButtonAdcSample()
 		m_pThread = NULL;
 
 		KillTimer(IDTIMER1);
+
+		if (!bBlockWork)
+		{
+			FILE* fh = fopen("../samples/info.txt", "w");
+
+			for (int hIndex = 0; hIndex < 10 * 512; hIndex++)
+			{
+				fprintf(fh, "%02X", g_historyBuffer[hIndex]);
+
+				if ((hIndex + 1) % 500 == 0)
+				{
+					fprintf(fh, "\r");
+				}
+				else
+				{
+					fprintf(fh, "  ");
+				}
+			}
+
+			fclose(fh);
+			fh = NULL;
+		}
 	}
 }
 
@@ -656,64 +681,81 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 		//	}
 		//}
 
-		if (g_frameValidLength > 512)
+		if (bBlockWork)
 		{
-			memset(g_frameBuffer, 0x00, 1024);
-			g_frameValidLength = 0;
-		}
-
-		memmove(&g_frameBuffer[g_frameValidLength], buffersInput[nCount], readLength);
-		g_frameValidLength += readLength;
-
-		for (int nCount = 0; nCount < 2; nCount++)
-		{
-			for (int mCount = 0; mCount + 500 - 1 < g_frameValidLength; mCount++)
+			if (g_historyIndex + readLength > 512 * 10)
 			{
-				if (g_frameBuffer[mCount] == 0xAA)
+				g_historyIndex = 0;
+				memset(g_historyBuffer, 0xEF, 512 * 10);
+				memmove(g_historyBuffer, buffersInput[nCount], readLength);
+			}
+			else
+			{
+				memmove(&g_historyBuffer[g_historyIndex], buffersInput[nCount], readLength);
+				g_historyIndex = g_historyIndex + readLength;
+			}
+
+			if (g_frameValidLength > 512)
+			{
+				memset(g_frameBuffer, 0x00, 1024);
+				g_frameValidLength = 0;
+			}
+
+			memmove(&g_frameBuffer[g_frameValidLength], buffersInput[nCount], readLength);
+			g_frameValidLength += readLength;
+
+			for (int nCount = 0; nCount < 2; nCount++)
+			{
+				for (int mCount = 0; mCount + 500 - 1 < g_frameValidLength; mCount++)
 				{
-					if (g_frameBuffer[mCount + 1] == 0x55)
+					if (g_frameBuffer[mCount] == 0xAA)
 					{
-						if (g_frameBuffer[mCount + 2] == 0xCD)
+						if (g_frameBuffer[mCount + 1] == 0x55)
 						{
-							if (g_frameBuffer[mCount + 3] == 0xCB)
+							if (g_frameBuffer[mCount + 2] == 0xCD)
 							{
-								if (g_frameBuffer[mCount + 4] == 0x10)
+								if (g_frameBuffer[mCount + 3] == 0xCB)
 								{
-									if (g_frameBuffer[mCount + 500 - 1] == 0x5C)
+									if (g_frameBuffer[mCount + 4] == 0x10)
 									{
-										UINT32 frameNumberNext = 0;
-										frameNumberNext += g_frameBuffer[mCount + 5];
-										frameNumberNext += g_frameBuffer[mCount + 6] << 8;
-										frameNumberNext += g_frameBuffer[mCount + 7] << 16;
-										frameNumberNext += g_frameBuffer[mCount + 8] << 24;
-
-										if (frameNumberNext - 1 != frameNumber)
+										if (g_frameBuffer[mCount + 500 - 1] == 0x5C)
 										{
-											GetSystemTime(&objStartTime);
-											CString strTemp = _T("");
-											strTemp.Format("%d/%d/%d/%d:\t\tframeNumber: %d, frameNumberNext: %d\r\n"
-												, objStartTime.wHour, objStartTime.wMinute, objStartTime.wSecond, objStartTime.wMilliseconds, frameNumber, frameNumberNext);
-											//pThis->m_edtDebug.SetWindowTextA(strTemp);
-											pThis->LogScroll(strTemp);
-										}
-										frameNumber = frameNumberNext;
+											UINT32 frameNumberNext = 0;
+											frameNumberNext += g_frameBuffer[mCount + 5];
+											frameNumberNext += g_frameBuffer[mCount + 6] << 8;
+											frameNumberNext += g_frameBuffer[mCount + 7] << 16;
+											frameNumberNext += g_frameBuffer[mCount + 8] << 24;
 
-										g_yBuff[g_writeIndex] = g_frameBuffer[mCount + 9 + (g_DlNum - 1) * 3];
-										g_yBuff[g_writeIndex] += g_frameBuffer[mCount + 9 + (g_DlNum - 1) * 3 + 1] << 8;
-										g_yBuff[g_writeIndex] += g_frameBuffer[mCount + 9 + (g_DlNum - 1) * 3 + 2] << 16;
-										if (g_yBuff[g_writeIndex] == 0x800000)
-										{
-											g_yBuff[g_writeIndex] -= 0x800000;
-										}
-										else if (g_yBuff[g_writeIndex] > 0x800000)
-										{
-											g_yBuff[g_writeIndex] -= 0x800000 * 2;
-										}
+											if ((frameNumberNext - 1 != frameNumber) && (frameNumber != 0))
+											{
+												bBlockWork = FALSE;
 
-										g_writeIndex = (g_writeIndex + 1) % DATA_SHOW_LENGTH;
+												GetSystemTime(&objStartTime);
+												CString strTemp = _T("");
+												strTemp.Format("%d/%d/%d/%d:\t\tframeNumber: %d, frameNumberNext: %d\r\n"
+													, objStartTime.wHour, objStartTime.wMinute, objStartTime.wSecond, objStartTime.wMilliseconds, frameNumber, frameNumberNext);
+												//pThis->m_edtDebug.SetWindowTextA(strTemp);
+												pThis->LogScroll(strTemp);
+											}
+											frameNumber = frameNumberNext;
 
-										g_frameValidLength -= (500 + mCount);
-										memmove(g_frameBuffer, &g_frameBuffer[mCount + 500], g_frameValidLength);
+											g_yBuff[g_writeIndex] = g_frameBuffer[mCount + 9 + (g_DlNum - 1) * 3];
+											g_yBuff[g_writeIndex] += g_frameBuffer[mCount + 9 + (g_DlNum - 1) * 3 + 1] << 8;
+											g_yBuff[g_writeIndex] += g_frameBuffer[mCount + 9 + (g_DlNum - 1) * 3 + 2] << 16;
+											if (g_yBuff[g_writeIndex] == 0x800000)
+											{
+												g_yBuff[g_writeIndex] -= 0x800000;
+											}
+											else if (g_yBuff[g_writeIndex] > 0x800000)
+											{
+												g_yBuff[g_writeIndex] -= 0x800000 * 2;
+											}
+
+											g_writeIndex = (g_writeIndex + 1) % DATA_SHOW_LENGTH;
+
+											g_frameValidLength -= (500 + mCount);
+											memmove(g_frameBuffer, &g_frameBuffer[mCount + 500], g_frameValidLength);
+										}
 									}
 								}
 							}
