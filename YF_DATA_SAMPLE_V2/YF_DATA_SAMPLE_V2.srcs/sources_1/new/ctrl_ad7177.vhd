@@ -109,6 +109,7 @@ signal	spi_rd_data		:std_logic_vector((device_num+1)*(32+8)-1 downto 0);
 signal	spi_rd_vld		: std_logic;	
 signal	s_axis_trst		: std_logic;	
 
+signal  fp1_data        :std_logic_vector(23 downto 0);
 
 
 constant wen_n:std_logic:='0';
@@ -147,9 +148,7 @@ signal	ad_data_buf_vld_i		: std_logic;
 
 attribute mark_debug:string;
 attribute mark_debug of spi_mosi:signal is "true";
-attribute mark_debug of spi_cs_i:signal is "true";
 attribute mark_debug of spi_cs  :signal is "true";
-attribute mark_debug of check_data_n:signal is "true";
 attribute mark_debug of spi_clk	:signal is "true";
 attribute mark_debug of spi_miso:signal is "true";
 attribute mark_debug of spi_rd_vld        :signal is "true";
@@ -159,6 +158,7 @@ attribute mark_debug of sample_en         :signal is "true";
 attribute mark_debug of rx_num            :signal is "true";
 attribute mark_debug of s_axis_tvalid     :signal is "true";
 attribute mark_debug of s_axis_tready     :signal is "true";
+attribute mark_debug of fp1_data          :signal is "true";
 
 
 begin
@@ -801,6 +801,19 @@ begin
                 adui_data<=spi_rd_data(31+40*device_num downto 8+40*device_num);
             end if;
         end if;  
+    end if;
+end process;
+
+process(clkin,rst_n)
+begin
+    if rst_n='0' then
+        fp1_data<=(others=>'0');
+    elsif rising_edge(clkin) then
+        if spi_rd_vld='1' and spi_rd_data(37 downto 32)=data_reg(5 downto 0)  then
+            if spi_rd_data(1 downto 0)="00" then
+                fp1_data<=spi_rd_data(31 downto 8);
+            end if;
+        end if;
     end if;
 end process;
 
