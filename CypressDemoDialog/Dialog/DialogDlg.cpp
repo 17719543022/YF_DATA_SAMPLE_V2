@@ -548,12 +548,12 @@ DWORD WINAPI CDialogDlg::PerformADCSampling(LPVOID lParam)
 	bufferOutput[3] = 0xCD;
 	bufferOutput[4] = 0x10;
 	bufferOutput[5] = 0x50;
-	bufferOutput[6] = 0x10;
-	bufferOutput[7] = 0x27;
+	bufferOutput[6] = 0x88;
+	bufferOutput[7] = 0x13;
 	bufferOutput[8] = 0x00;
 	bufferOutput[9] = 0x00;
 	bufferOutput[10] = 0x01;
-	bufferOutput[11] = 0x24;
+	bufferOutput[11] = 0x12;
 	bufferOutput[12] = 0x00;
 	bufferOutput[13] = 0x00;
 	bufferOutput[14] = 0x00;

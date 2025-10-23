@@ -469,15 +469,13 @@ begin
                         end if;
                         cnt:=0;
                     
-                    
-                    when 1=>                            --等待1ms;
+                    when 1=>
                         if cnt>=48*10**3-1 then
                             cnt:=0;
                             s1<=2;
                         else
                             cnt:=cnt+1;
                         end if;
-                    
                         
                     when 2=>
                         s_axis_trst<='0';
@@ -494,12 +492,6 @@ begin
                         adc_check_sus<=(others=>'0');
                         
                     when 3=>
-                        -- if spi_rd_vld='1' and spi_rd_data(24-1 downto 8)=X"4fd" then      --ADC通信正常
-                            -- s1<=2;
-                            -- adc_check_sus<='1';
-                        -- else
-                            -- s1<=0;
-                        -- end if;
                         if spi_rd_vld='1' then
                             for i in 0 to device_num-1 loop
                                 if spi_rd_data(40*(i+1)-1-8 downto 20+40*i)=X"4FD" then
@@ -511,19 +503,19 @@ begin
                             s1<=14;
                         end if;
                         cnt_tx<=0;
-    ----------------------配置过程，速率为10000sps 24位模式默认---------------------------------------
+
                     when 14=>
                         s_axis_tnum<=conv_std_logic_vector(24,16);
                         if cnt_tx=0 then
-                            s_axis_tdata<=X"01_8000"&resv_data(15 downto 0); --配置使用外部基准源 
+                            s_axis_tdata<=X"01_8000"&resv_data(15 downto 0);
                         elsif cnt_tx=1 then
-                            s_axis_tdata<=X"20_1f00"&resv_data(15 downto 0); --配置使用外部基准源 
+                            s_axis_tdata<=X"20_1f00"&resv_data(15 downto 0);
                         elsif cnt_tx=2 then
-                            s_axis_tdata<=X"21_1f00"&resv_data(15 downto 0); --配置使用外部基准源 
+                            s_axis_tdata<=X"21_1f00"&resv_data(15 downto 0);
                         elsif cnt_tx=3 then
-                            s_axis_tdata<=X"22_1f00"&resv_data(15 downto 0); --配置使用外部基准源  
+                            s_axis_tdata<=X"22_1f00"&resv_data(15 downto 0);
                         elsif cnt_tx=4 then
-                            s_axis_tdata<=X"23_1f00"&resv_data(15 downto 0); --配置使用外部基准源  
+                            s_axis_tdata<=X"23_1f00"&resv_data(15 downto 0);
                         end if;
                         s_axis_tuser<=spi_wr_cmd;  
                         if s_axis_tvalid='1' and s_axis_tready='1' then
@@ -542,9 +534,9 @@ begin
                     when 15=>
                         s_axis_tnum<=conv_std_logic_vector(32,16);
                         if cnt_tx=0 then
-                            s_axis_tdata<=X"38_55_5555"&resv_data(7 downto 0); --配置增益寄存器 
+                            s_axis_tdata<=X"38_55_5555"&resv_data(7 downto 0);
                         elsif cnt_tx=1 then
-                            s_axis_tdata<=X"39_55_5555"&resv_data(7 downto 0); --配置增益寄存器 
+                            s_axis_tdata<=X"39_55_5555"&resv_data(7 downto 0);
                         end if; 
                         s_axis_tuser<=spi_wr_cmd;                    
                         if s_axis_tvalid='1' and s_axis_tready='1' then
@@ -562,7 +554,7 @@ begin
                     
                     when 4=>
                         s_axis_tnum<=conv_std_logic_vector(24,16);
-                        s_axis_tdata<=X"02_00c0"&resv_data(15 downto 0); --使能data_stat模式 24位转换结果    
+                        s_axis_tdata<=X"02_00c0"&resv_data(15 downto 0);
                         s_axis_tuser<=spi_wr_cmd;  
                         if s_axis_tvalid='1' and s_axis_tready='1' then
                             s1<=11;
@@ -570,11 +562,11 @@ begin
                         else
                             s1<=s1;
                             s_axis_tvalid<='1';
-                        end if;  
-    ----------------------单通道使能-----------------------------------------------------
+                        end if;
+
                     when 11=>
                         s_axis_tnum<=conv_std_logic_vector(24,16);
-                        s_axis_tdata<=X"10_8001"&resv_data(15 downto 0); --使能data_stat模式 24位转换结果    
+                        s_axis_tdata<=X"10_8001"&resv_data(15 downto 0);
                         s_axis_tuser<=spi_wr_cmd;  
                         if s_axis_tvalid='1' and s_axis_tready='1' then
                             s1<=12;
@@ -586,9 +578,8 @@ begin
                         
                     when 12=>
                         s_axis_tnum<=conv_std_logic_vector(24,16);
-                        s_axis_tdata<=X"11_0043"&resv_data(15 downto 0); --使能data_stat模式 24位转换结果    
+                        s_axis_tdata<=X"11_0043"&resv_data(15 downto 0);
                         s_axis_tuser<=spi_wr_cmd;  
-                        ad_cfg_over<='1';
                         if s_axis_tvalid='1' and s_axis_tready='1' then
                             s1<=13;
                             s_axis_tvalid<='0';
@@ -597,67 +588,13 @@ begin
                             s_axis_tvalid<='1';
                         end if;     
 
-                    -- when 13=>
-                        -- s_axis_tnum<=conv_std_logic_vector(24,16);
-                        -- s_axis_tdata<=X"12_8001"&resv_data(15 downto 0); --使能data_stat模式 24位转换结果    
-                        -- s_axis_tuser<=spi_wr_cmd;  
-                        -- if s_axis_tvalid='1' and s_axis_tready='1' then
-                            -- s1<=14;
-                            -- s_axis_tvalid<='0';
-                        -- else
-                            -- s1<=s1;
-                            -- s_axis_tvalid<='1';
-                        -- end if;   
-
-                    -- when 14=>
-                        -- s_axis_tnum<=conv_std_logic_vector(24,16);
-                        -- s_axis_tdata<=X"13_8001"&resv_data(15 downto 0); --使能data_stat模式 24位转换结果    
-                        -- s_axis_tuser<=spi_wr_cmd;  
-                        -- if s_axis_tvalid='1' and s_axis_tready='1' then
-                            -- s1<=5;
-                            -- s_axis_tvalid<='0';
-                        -- else
-                            -- s1<=s1;
-                            -- s_axis_tvalid<='1';
-                        -- end if;   
-                        
-                        
-     
-                    when 5=>
-                        --s_axis_tnum<=conv_std_logic_vector(24,16);
-                        --s_axis_tdata<=X"01_8010"&resv_data(15 downto 0); --配置为单次转换模式 
-                        --s_axis_tuser<=spi_wr_cmd;                    
-                        --if s_axis_tvalid='1' and s_axis_tready='1' then
-                        --    s1<=6;
-                        --    s_axis_tvalid<='0';
-                        --else
-                        --    s1<=s1;
-                        --    s_axis_tvalid<='1';
-                        --end if;  
-                        s1<=6;
-    -------------------------------------------------------------------
+                    ------------------------------------------------------------------
+                    ------------------------------------------------------------------
                     when 6=>
                         ad_data_buf_vld_i<='0';
-                        ad_cfg_over<='1';
-                        cnt:=0;
-                        s1<=7;
+                        s1<=8;
                     
-                    when 7=>
-                        if cnt>=10 then
-                            s1<=8;
-                            cnt:=0;
-                        else
-                            cnt:=cnt+1;
-                        end if;
-                        
                     when 8=>
-                        --if spi_miso=resv_data(device_num-1 downto 0) then  ---miso='0'
-                        --    s1<=9;
-                        --    err_num<=(others=>'0');
-                        --elsif sample_en='1' then                        ---出现采集错误，ADC不能进行正常的通信，给出错误标识
-                        --    s1<=9;
-                        --    err_num<=spi_miso;
-                        --end if;
                         if sample_en='1' then
                             s1<=9;
                             err_num<=spi_miso;
@@ -678,23 +615,18 @@ begin
                     
                     when 10=>
                         if spi_rd_vld='1' then
-                            --if rx_num>=2 then
-                            --    s1<=13;
-                            --    ad_data_buf_vld_i<='1';
-                            --else
-                            --    s1<=6;
-                            --end if;
                             s1<=6;
                             ad_data_buf_vld_i<='1';
                         else
                             s1<=s1;
                         end if;
+                    ------------------------------------------------------------------
+                    ------------------------------------------------------------------
                     
-                        
                     when 13=>
                         ad_data_buf_vld_i<='0';
                         if sample_en='1' then
-                            s1<=5;
+                            s1<=6;
                         else
                             s1<=s1;
                         end if;
