@@ -42,11 +42,14 @@ generic(device_num:integer:=18);
     spi_cs          :out std_logic;
     spi_mosi        :out std_logic;
     spi_miso        :in std_logic_vector(device_num-1 downto 0);
+    ad7177_sync     :out std_logic;
     audi_in         :in std_logic;
     adc_check_sus   :out std_logic_vector(device_num-1 downto 0);
     work_mod        :in std_logic_vector(7 downto 0);
     m0_num          :in std_logic_vector(7 downto 0);
     sample_start    :in std_logic;
+    cnt_cycle       :in std_logic_vector(31 downto 0);
+    cnt_cycle_ov    :in std_logic;
 ----------------------------
     ad_data_buf     :out ad_buf_t;
     ad_data_buf_vld :out std_logic;
@@ -109,7 +112,6 @@ signal	spi_rd_data		:std_logic_vector((device_num+1)*(32+8)-1 downto 0);
 signal	spi_rd_vld		: std_logic;	
 signal	s_axis_trst		: std_logic;	
 
-signal  fp1_data        :std_logic_vector(23 downto 0);
 
 
 constant wen_n:std_logic:='0';
@@ -133,8 +135,7 @@ signal	spi_cs_i		: std_logic;
 
 
 signal cnt_tx:integer range 0 to 15;
-signal s1:integer range 0 to 15;
-signal cnt_cycle:integer;
+signal s1:integer range 0 to 31;
 signal rx_num:integer range 0 to 15;
 
 
@@ -146,19 +147,31 @@ signal	rx_ad_data_temp_vld		: std_logic;
 signal	ad_data_buf_vld_i		: std_logic;	
 
 
+signal  fp1_data                : std_logic_vector(23 downto 0);
+signal  ad7177_dout_7_d1        : std_logic;
+signal  ad7177_dout_7_d2        : std_logic;
+signal  trigger_wait_cnt        : integer range 0 to 255;
+signal  adc_data_read_trigger   : std_logic;
+signal  adc_result_read_period  : std_logic;
+signal  spi_state_cnt           : std_logic_vector(15 downto 0);
+signal  ad7177_sck_initial      : std_logic;
+signal  spi_clk_i               : std_logic;
+
 attribute mark_debug:string;
 attribute mark_debug of spi_mosi:signal is "true";
 attribute mark_debug of spi_cs  :signal is "true";
 attribute mark_debug of spi_clk	:signal is "true";
 attribute mark_debug of spi_miso:signal is "true";
-attribute mark_debug of spi_rd_vld        :signal is "true";
 attribute mark_debug of s1                :signal is "true";
-attribute mark_debug of m0_num_change     :signal is "true";
-attribute mark_debug of sample_en         :signal is "true";
-attribute mark_debug of rx_num            :signal is "true";
-attribute mark_debug of s_axis_tvalid     :signal is "true";
-attribute mark_debug of s_axis_tready     :signal is "true";
-attribute mark_debug of fp1_data          :signal is "true";
+attribute mark_debug of ad7177_dout_7_d1  :signal is "true";
+attribute mark_debug of ad7177_dout_7_d2  :signal is "true";
+attribute mark_debug of trigger_wait_cnt  :signal is "true";
+attribute mark_debug of adc_data_read_trigger   :signal is "true";
+attribute mark_debug of adc_result_read_period  :signal is "true";
+attribute mark_debug of spi_state_cnt     :signal is "true";
+attribute mark_debug of ad7177_sck_initial:signal is "true";
+attribute mark_debug of cnt_cycle_ov      :signal is "true";
+attribute mark_debug of ad7177_sync       :signal is "true";
 
 
 begin
@@ -179,14 +192,15 @@ INS_SPI_DRV:SPI_MASTER_V1 PORT MAP(
     ----------------    =>  ----------------    ,
     sdo				    =>  spi_mosi		    ,
     cs				    =>  spi_cs_i	        ,
-    sck				    =>  spi_clk				,
+    sck				    =>  spi_clk_i			,
     sdi(device_num-1 downto 0)=>  spi_miso		,	
     sdi(device_num)			  =>  audi_in			
 );
 -------------------------------------------------------------------
 
 --spi_cs<=spi_cs_i and check_data_n;
-spi_cs<=spi_cs_i when (m0_num=X"12") else (spi_cs_i and check_data_n);
+spi_cs<='0' when (m0_num=X"12" and (s1=16 or s1=17)) else spi_cs_i when (m0_num=X"12") else (spi_cs_i and check_data_n);
+spi_clk<=ad7177_sck_initial when (s1=17) else spi_clk_i;
 
 process(clkin,rst_n)
 variable cnt:integer;
@@ -543,7 +557,7 @@ begin
                             s_axis_tvalid<='0';
                             if cnt_tx>=1 then
                                 cnt_tx<=0;
-                                s1<=4;
+                                s1<=11;
                             else
                                 cnt_tx<=cnt_tx+1;
                             end if;
@@ -552,18 +566,6 @@ begin
                             s_axis_tvalid<='1';
                         end if;                 
                     
-                    when 4=>
-                        s_axis_tnum<=conv_std_logic_vector(24,16);
-                        s_axis_tdata<=X"02_00c0"&resv_data(15 downto 0);
-                        s_axis_tuser<=spi_wr_cmd;  
-                        if s_axis_tvalid='1' and s_axis_tready='1' then
-                            s1<=11;
-                            s_axis_tvalid<='0';
-                        else
-                            s1<=s1;
-                            s_axis_tvalid<='1';
-                        end if;
-
                     when 11=>
                         s_axis_tnum<=conv_std_logic_vector(24,16);
                         s_axis_tdata<=X"10_8001"&resv_data(15 downto 0);
@@ -590,45 +592,56 @@ begin
 
                     ------------------------------------------------------------------
                     ------------------------------------------------------------------
-                    when 6=>
-                        ad_data_buf_vld_i<='0';
-                        s1<=8;
-                    
-                    when 8=>
-                        if sample_en='1' then
-                            s1<=9;
-                            err_num<=spi_miso;
+                    --when 6=>
+                    --    ad_data_buf_vld_i<='0';
+                    --    s1<=8;
+                    --
+                    --when 8=>
+                    --    if sample_en='1' then
+                    --        s1<=9;
+                    --        err_num<=spi_miso;
+                    --    end if;
+                    --
+                    --when 9=>
+                    --    s_axis_tnum<=conv_std_logic_vector(40,16);
+                    --    s_axis_tdata<=wen_n&rd_en&data_reg(5 downto 0)&resv_data(31 downto 0);  
+                    --    s_axis_tuser<=spi_rd_cmd;  
+                    --    if s_axis_tvalid='1' and s_axis_tready='1' then
+                    --        s1<=10;
+                    --        s_axis_tvalid<='0';
+                    --    else
+                    --        s1<=s1;
+                    --        s_axis_tvalid<='1';
+                    --    end if; 
+                    --    ad_data_buf_vld_i<='0';
+                    --
+                    --when 10=>
+                    --    if spi_rd_vld='1' then
+                    --        s1<=6;
+                    --        ad_data_buf_vld_i<='1';
+                    --    else
+                    --        s1<=s1;
+                    --    end if;
+                    when 16=>
+                        if cnt_cycle_ov='1' then
+                            s1<=17;
                         end if;
-
-                    when 9=>
-                        s_axis_tnum<=conv_std_logic_vector(40,16);
-                        s_axis_tdata<=wen_n&rd_en&data_reg(5 downto 0)&resv_data(31 downto 0);  
-                        s_axis_tuser<=spi_rd_cmd;  
-                        if s_axis_tvalid='1' and s_axis_tready='1' then
-                            s1<=10;
-                            s_axis_tvalid<='0';
-                        else
-                            s1<=s1;
-                            s_axis_tvalid<='1';
-                        end if; 
-                        ad_data_buf_vld_i<='0';
-                    
-                    when 10=>
-                        if spi_rd_vld='1' then
-                            s1<=6;
-                            ad_data_buf_vld_i<='1';
-                        else
-                            s1<=s1;
-                        end if;
+                        
+                    when 17=>
+                        s1<=s1;
                     ------------------------------------------------------------------
                     ------------------------------------------------------------------
                     
                     when 13=>
-                        ad_data_buf_vld_i<='0';
-                        if sample_en='1' then
-                            s1<=6;
+                        s_axis_tnum<=conv_std_logic_vector(24,16);
+                        s_axis_tdata<=X"02_10c0"&resv_data(15 downto 0);
+                        s_axis_tuser<=spi_wr_cmd;  
+                        if s_axis_tvalid='1' and s_axis_tready='1' then
+                            s1<=16;
+                            s_axis_tvalid<='0';
                         else
                             s1<=s1;
+                            s_axis_tvalid<='1';
                         end if;
                     
                     when others=>
@@ -658,6 +671,110 @@ begin
         end if;
     end if;
 end process;
+
+process(clkin,rst_n)
+begin
+    if rst_n='0' then
+        ad7177_sync<='0';
+    else
+        if rising_edge(clkin) then
+            if cnt_cycle=X"000000C8" and s1=17 then
+                ad7177_sync<='1';
+            elsif cnt_cycle=X"000003E8" and s1=17 then
+                ad7177_sync<='0';
+            end if;
+        end if;
+    end if;
+end process;
+
+process(clkin,rst_n)
+begin
+    if rst_n='0' then
+        ad7177_dout_7_d1<='1';
+        ad7177_dout_7_d2<='1';
+    else
+        if rising_edge(clkin) then
+            ad7177_dout_7_d1<=spi_miso(7);
+            ad7177_dout_7_d2<=ad7177_dout_7_d1;
+        end if;
+    end if;
+end process;
+
+process(clkin,rst_n)
+begin
+    if rst_n='0' then
+        trigger_wait_cnt<=0;
+    else
+        if rising_edge(clkin) then
+            if ad7177_dout_7_d2='1' and ad7177_dout_7_d1='0' and spi_state_cnt=X"0000" and s1=17 then
+                trigger_wait_cnt<=32;
+            elsif not(trigger_wait_cnt=0) then
+                trigger_wait_cnt<=trigger_wait_cnt-1;
+            end if;
+        end if;
+    end if;
+end process;
+
+process(clkin,rst_n)
+begin
+    if rst_n='0' then
+        adc_data_read_trigger<='0';
+    else
+        if rising_edge(clkin) then
+            if trigger_wait_cnt=1 then
+                adc_data_read_trigger<='1';
+            else
+                adc_data_read_trigger<='0';
+            end if;
+         end if;
+    end if;
+end process;
+
+process(clkin,rst_n)
+begin
+    if rst_n='0' then
+        spi_state_cnt<=X"0000";
+    else
+        if rising_edge(clkin) then
+            if adc_data_read_trigger='1' then
+                spi_state_cnt<=X"0400";
+            elsif not(spi_state_cnt=X"0000") then
+                spi_state_cnt<=spi_state_cnt-'1';
+            end if;
+        end if;
+    end if;
+end process;
+
+process(clkin,rst_n)
+begin
+    if rst_n='0' then
+        adc_result_read_period<='0';
+    else
+        if rising_edge(clkin) then
+            if adc_data_read_trigger='1' then
+                adc_result_read_period<='1';
+            elsif spi_state_cnt=X"0001" then
+                adc_result_read_period<='0';
+            end if;
+        end if;
+    end if;
+end process;
+
+process(clkin,rst_n)
+begin
+    if rst_n='0' then
+        ad7177_sck_initial<='1';
+    else
+        if rising_edge(clkin) then
+            if spi_state_cnt(4 downto 0)=31 then
+                ad7177_sck_initial<='0';
+            elsif spi_state_cnt(4 downto 0)=15 then
+                ad7177_sck_initial<='1';
+            end if;
+        end if;
+    end if;
+end process;
+
 ------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 process(clkin,rst_n)

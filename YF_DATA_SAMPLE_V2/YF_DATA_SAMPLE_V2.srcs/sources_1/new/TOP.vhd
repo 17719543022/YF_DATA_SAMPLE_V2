@@ -57,6 +57,7 @@ entity TOP is
     spi_cs                  :out std_logic;
     spi_mosi                :out std_logic;
     spi_miso                :in std_logic_vector(18-1 downto 0);
+    ad7177_sync             :out std_logic;
     audi_in                 :in std_logic;
 ------------------------------------------
     sr_srclr                :out std_logic;             ---¸´Î»ĞÅºÅ(µÍÓĞĞ§)
@@ -226,6 +227,7 @@ generic(device_num:integer:=18);
     spi_cs            :out std_logic;
     spi_mosi          :out std_logic;
     spi_miso          :in std_logic_vector(device_num-1 downto 0);
+    ad7177_sync       :out std_logic;
     audi_in           :in std_logic;
 ----------------------------
     ad_channel_sta    :out std_logic_vector(35 downto 0);
@@ -236,6 +238,8 @@ generic(device_num:integer:=18);
     commom_sig        :in std_logic;
     cfg_data_en       :in std_logic;    
     trigger_sample_cmd:in std_logic;    
+    cnt_cycle         :in std_logic_vector(31 downto 0);
+    cnt_cycle_ov      :in std_logic;
 ------------------------------------------    
     channel_check_en  :in std_logic;
     channel_check     :in std_logic_vector(35 downto 0); 
@@ -288,6 +292,8 @@ component usb_pro_deal is
     commom_sig        :out std_logic;
     cfg_data_en       :out std_logic;    
     trigger_sample_cmd:out std_logic;    
+    cnt_cycle         :out std_logic_vector(31 downto 0);
+    cnt_cycle_ov      :out std_logic;
 ---------------×Ô¼ìÃüÁî---------------------------    
     channel_check_en  :out std_logic;
     channel_check0    :out std_logic_vector(35 downto 0);
@@ -335,6 +341,8 @@ signal    m0_num            :std_logic_vector(7 downto 0);
 signal    commom_sig        :std_logic;
 signal    cfg_data_en       :std_logic;    
 signal    trigger_sample_cmd:std_logic;     
+signal    cnt_cycle         :std_logic_vector(31 downto 0);
+signal    cnt_cycle_ov      :std_logic;
 signal    channel_check_en  :std_logic;
 signal    channel_check     :std_logic_vector(35 downto 0);
 signal    rst_n_usb         :std_logic;    
@@ -517,6 +525,7 @@ ins_drv:drv_top port map(
     spi_cs             =>   spi_cs              ,
     spi_mosi           =>   spi_mosi            ,
     spi_miso           =>   spi_miso            ,
+    ad7177_sync        =>   ad7177_sync         ,
     audi_in            =>   audi_in             ,
     ---------------     =>  ---------------     ,
     ad_channel_sta     =>   ad_channel_sta      ,
@@ -527,6 +536,8 @@ ins_drv:drv_top port map(
     commom_sig         =>   commom_sig          ,
     cfg_data_en        =>   cfg_data_en         ,
     trigger_sample_cmd =>   trigger_sample_cmd  ,
+    cnt_cycle          =>   cnt_cycle           ,
+    cnt_cycle_ov       =>   cnt_cycle_ov        ,
     ------------------ =>   ------------------  ,
     channel_check_en   =>   channel_check_en    ,
     channel_check      =>   channel_check       ,
@@ -572,6 +583,8 @@ ins_usb_pro_deal:usb_pro_deal port map(
     commom_sig             =>   commom_sig               ,
     cfg_data_en            =>   cfg_data_en              ,
     trigger_sample_cmd     =>   trigger_sample_cmd       ,
+    cnt_cycle              =>   cnt_cycle                ,
+    cnt_cycle_ov           =>   cnt_cycle_ov             ,
     channel_check_en       =>   channel_check_en         ,
     channel_check0         =>   channel_check            ,
     adui_data              =>   adui_data                ,

@@ -43,6 +43,7 @@ generic(device_num:integer:=18);
     spi_cs            :out std_logic;
     spi_mosi          :out std_logic;
     spi_miso          :in std_logic_vector(device_num-1 downto 0);
+    ad7177_sync       :out std_logic;
     audi_in           :in std_logic;
 ----------------------------
     ad_channel_sta    :out std_logic_vector(35 downto 0);
@@ -53,6 +54,8 @@ generic(device_num:integer:=18);
     commom_sig        :in std_logic;
     cfg_data_en       :in std_logic;    
     trigger_sample_cmd:in std_logic;    
+    cnt_cycle         :in std_logic_vector(31 downto 0);
+    cnt_cycle_ov      :in std_logic;
 ------------------------------------------    
     channel_check_en  :in std_logic;
     channel_check     :in std_logic_vector(35 downto 0); 
@@ -84,12 +87,15 @@ generic(device_num:integer:=18);
     spi_cs        :out std_logic;
     spi_mosi      :out std_logic;
     spi_miso      :in std_logic_vector(device_num-1 downto 0);
+    ad7177_sync   :out std_logic;
     audi_in       :in std_logic;
     adc_check_sus :out std_logic_vector(device_num-1 downto 0); 
     err_num       :out std_logic_vector(device_num-1 downto 0); 
     work_mod        :in std_logic_vector(7 downto 0);
     m0_num          :in std_logic_vector(7 downto 0);
     sample_start    :in std_logic;
+    cnt_cycle       :in std_logic_vector(31 downto 0);
+    cnt_cycle_ov    :in std_logic;
 ----------------------------
     ad_data_buf     :out ad_buf_t;
     ad_data_buf_vld :out std_logic;
@@ -219,11 +225,14 @@ ins_ad_drv:ctrl_ad7177 port map(
     spi_cs          =>  spi_cs_i           ,
     spi_mosi        =>  spi_mosi_i         ,
     spi_miso        =>  spi_miso           ,
+    ad7177_sync     =>  ad7177_sync        ,
     audi_in         =>  audi_in            ,
     adc_check_sus   =>  adc_check_sus      ,
     work_mod        =>  work_mod           ,
     m0_num          =>  m0_num             ,
     sample_start    =>  trigger_sample_cmd ,        ---´¥·¢ÃüÁî
+    cnt_cycle       =>  cnt_cycle          ,
+    cnt_cycle_ov    =>  cnt_cycle_ov       ,
     -------------   =>  -------------      ,
     ad_data_buf     =>  ad_data_buf_i      ,
     ad_data_buf_vld =>  ad_data_buf_vld    ,
