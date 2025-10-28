@@ -46,10 +46,10 @@ generic(
 	tewh			:integer:=5;	--------两次CS启动的最小时间间隔（时间=（tewh+3）*clkin）
 -----------------------------------
 	tx_data_width	:integer:=24;
-	rx_data_width	:integer:=16;
+	rx_data_width	:integer:=32;
 	rx_addr_width	:integer:=8;
 --------------------------------
-    sdi_num         :integer:=18;
+    sdi_num         :integer:=19;
 --------------------------------
 	data_seq		:std_logic:='0'			------- 0=>MSB->LSB 1=>LSB->MSB
 );
@@ -63,7 +63,12 @@ generic(
 	s_axis_tuser	:in std_logic;					---表示读写信号的表示	(1=》写 ，0=》读)
 	s_axis_trst	    :in std_logic;					---专门用于产生AD的复位逻辑    
 	s_axis_tnum		:in std_logic_vector(15 downto 0);	--接收与发送总bit数（一次SPI工作过程中总时钟数）
-----------------------------------------
+--------adc_7177_result_process begin---------
+    m0_num          :in std_logic_vector(7 downto 0);
+    read_trigger    :in std_logic;
+    read_period     :in std_logic;
+    spi_state_cnt   :in std_logic_vector(15 downto 0);
+--------adc_7177_result_process end-----------
 	spi_rd_data		:out std_logic_vector(sdi_num*(rx_data_width+rx_addr_width)-1 downto 0);	
 	spi_rd_vld		:out std_logic;	
 ----------------------------------------
@@ -104,6 +109,23 @@ signal tx_data			:std_logic_vector(tx_data_width-1 downto 0):=(others=>'0');
 signal read_addr		:std_logic_vector(rx_addr_width-1 downto 0):=(others=>'0');
 signal tx_data_num		:std_logic_vector(16-1 downto 0):=(others=>'0');
 
+--------adc_7177_result_process begin---------
+signal sdi_d1           :std_logic_vector(sdi_num-1 downto 0);
+signal sdi_d2           :std_logic_vector(sdi_num-1 downto 0);
+type t2 is array(0 to sdi_num-1) of std_logic_vector(31 downto 0);
+signal adc_result_shift_reg :t2;
+signal result_write_trigger :std_logic;
+signal adc_result_shift_fp1 :std_logic_vector(31 downto 0);
+
+attribute mark_debug                        : string;
+attribute mark_debug of sdi                 : signal is "true";
+attribute mark_debug of read_trigger        : signal is "true";
+attribute mark_debug of read_period         : signal is "true";
+attribute mark_debug of spi_state_cnt       : signal is "true";
+attribute mark_debug of result_write_trigger: signal is "true";
+attribute mark_debug of adc_result_shift_fp1: signal is "true";
+
+--------adc_7177_result_process end-----------
 
 begin
 
@@ -401,7 +423,62 @@ begin
 	end if;
 end process;						
 
+--------adc_7177_result_process begin---------
+g1:for i in 0 to sdi_num-1 generate
+begin
+    process(clkin,rst_n)
+    begin
+        if rising_edge(clkin) then
+            sdi_d1(i)<=sdi(i);
+            sdi_d2(i)<=sdi_d1(i);
+        end if;
+    end process;
+    
+    process(clkin,rst_n)
+    begin
+        if rst_n='0' then
+            adc_result_shift_reg(i)<=X"0000_0000";
+        else
+            if rising_edge(clkin) then
+                if read_trigger='1' then
+                    adc_result_shift_reg(i)<=X"FFFF_FFFF";
+                elsif read_period='1' and spi_state_cnt(4 downto 0)="01101" then
+                    adc_result_shift_reg(i)<=adc_result_shift_reg(i)(30 downto 0) & sdi_d2(i);
+                end if;
+            end if;
+        end if;
+    end process;
+end generate;
 
+process(clkin,rst_n)
+begin
+    if rst_n='0' then
+        result_write_trigger<='0';
+    else
+        if rising_edge(clkin) then
+            if spi_state_cnt=X"0007" then
+                result_write_trigger<='1';
+            else
+                result_write_trigger<='0';
+            end if;
+        end if;
+    end if;
+end process;
+
+process(clkin,rst_n)
+begin
+    if rst_n='0' then
+        adc_result_shift_fp1<=X"0000_0000";
+    else
+        if rising_edge(clkin) then
+            if result_write_trigger='1' then
+                adc_result_shift_fp1<=adc_result_shift_reg(0);
+            end if;
+        end if;
+    end if;
+end process;
+
+--------adc_7177_result_process end-----------
 
 process(clkin,rst_n)
 begin
@@ -421,9 +498,6 @@ begin
 		end if;
 	end if;
 end process;
-
-
-
 
 
 

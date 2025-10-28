@@ -271,7 +271,7 @@ create_debug_core u_ila_0 ila
 set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0]
 set_property ALL_PROBE_SAME_MU_CNT 4 [get_debug_cores u_ila_0]
 set_property C_ADV_TRIGGER true [get_debug_cores u_ila_0]
-set_property C_DATA_DEPTH 4096 [get_debug_cores u_ila_0]
+set_property C_DATA_DEPTH 16384 [get_debug_cores u_ila_0]
 set_property C_EN_STRG_QUAL true [get_debug_cores u_ila_0]
 set_property C_INPUT_PIPE_STAGES 0 [get_debug_cores u_ila_0]
 set_property C_TRIGIN_EN false [get_debug_cores u_ila_0]
@@ -305,14 +305,10 @@ create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe6]
 set_property port_width 8 [get_debug_ports u_ila_0/probe6]
 connect_debug_port u_ila_0/probe6 [get_nets [list {ins_drv/ins_ad_drv/trigger_wait_cnt[0]} {ins_drv/ins_ad_drv/trigger_wait_cnt[1]} {ins_drv/ins_ad_drv/trigger_wait_cnt[2]} {ins_drv/ins_ad_drv/trigger_wait_cnt[3]} {ins_drv/ins_ad_drv/trigger_wait_cnt[4]} {ins_drv/ins_ad_drv/trigger_wait_cnt[5]} {ins_drv/ins_ad_drv/trigger_wait_cnt[6]} {ins_drv/ins_ad_drv/trigger_wait_cnt[7]}]]
-
-
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe7]
 set_property port_width 1 [get_debug_ports u_ila_0/probe7]
 connect_debug_port u_ila_0/probe7 [get_nets [list ins_drv/ins_ad_drv/ad7177_sck_initial]]
-
-
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe8]
 set_property port_width 1 [get_debug_ports u_ila_0/probe8]
@@ -325,18 +321,34 @@ create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe10]
 set_property port_width 1 [get_debug_ports u_ila_0/probe10]
 connect_debug_port u_ila_0/probe10 [get_nets [list ins_usb_pro_deal/lock_data_en]]
-
-
-
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe11]
 set_property port_width 1 [get_debug_ports u_ila_0/probe11]
 connect_debug_port u_ila_0/probe11 [get_nets [list ins_drv/ins_ad_drv/ad7177_sync]]
-
-
-
-
-
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe12]
+set_property port_width 19 [get_debug_ports u_ila_0/probe12]
+connect_debug_port u_ila_0/probe12 [get_nets [list {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[0]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[1]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[2]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[3]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[4]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[5]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[6]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[7]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[8]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[9]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[10]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[11]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[12]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[13]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[14]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[15]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[16]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[17]} {ins_drv/ins_ad_drv/INS_SPI_DRV/sdi[18]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe13]
+set_property port_width 16 [get_debug_ports u_ila_0/probe13]
+connect_debug_port u_ila_0/probe13 [get_nets [list {ins_drv/ins_ad_drv/INS_SPI_DRV/spi_state_cnt[0]} {ins_drv/ins_ad_drv/INS_SPI_DRV/spi_state_cnt[1]} {ins_drv/ins_ad_drv/INS_SPI_DRV/spi_state_cnt[2]} {ins_drv/ins_ad_drv/INS_SPI_DRV/spi_state_cnt[3]} {ins_drv/ins_ad_drv/INS_SPI_DRV/spi_state_cnt[4]} {ins_drv/ins_ad_drv/INS_SPI_DRV/spi_state_cnt[5]} {ins_drv/ins_ad_drv/INS_SPI_DRV/spi_state_cnt[6]} {ins_drv/ins_ad_drv/INS_SPI_DRV/spi_state_cnt[7]} {ins_drv/ins_ad_drv/INS_SPI_DRV/spi_state_cnt[8]} {ins_drv/ins_ad_drv/INS_SPI_DRV/spi_state_cnt[9]} {ins_drv/ins_ad_drv/INS_SPI_DRV/spi_state_cnt[10]} {ins_drv/ins_ad_drv/INS_SPI_DRV/spi_state_cnt[11]} {ins_drv/ins_ad_drv/INS_SPI_DRV/spi_state_cnt[12]} {ins_drv/ins_ad_drv/INS_SPI_DRV/spi_state_cnt[13]} {ins_drv/ins_ad_drv/INS_SPI_DRV/spi_state_cnt[14]} {ins_drv/ins_ad_drv/INS_SPI_DRV/spi_state_cnt[15]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe14]
+set_property port_width 1 [get_debug_ports u_ila_0/probe14]
+connect_debug_port u_ila_0/probe14 [get_nets [list ins_drv/ins_ad_drv/INS_SPI_DRV/read_period]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe15]
+set_property port_width 1 [get_debug_ports u_ila_0/probe15]
+connect_debug_port u_ila_0/probe15 [get_nets [list ins_drv/ins_ad_drv/INS_SPI_DRV/read_trigger]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe16]
+set_property port_width 32 [get_debug_ports u_ila_0/probe16]
+connect_debug_port u_ila_0/probe16 [get_nets [list {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[0]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[1]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[2]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[3]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[4]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[5]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[6]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[7]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[8]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[9]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[10]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[11]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[12]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[13]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[14]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[15]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[16]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[17]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[18]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[19]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[20]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[21]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[22]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[23]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[24]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[25]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[26]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[27]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[28]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[29]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[30]} {ins_drv/ins_ad_drv/INS_SPI_DRV/adc_result_shift_fp1[31]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe17]
+set_property port_width 1 [get_debug_ports u_ila_0/probe17]
+connect_debug_port u_ila_0/probe17 [get_nets [list ins_drv/ins_ad_drv/INS_SPI_DRV/result_write_trigger]]
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]

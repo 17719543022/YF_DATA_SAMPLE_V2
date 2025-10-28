@@ -94,6 +94,11 @@ generic(
 	s_axis_trst	    :in std_logic;					---专门用于产生AD的复位逻辑
 	s_axis_tnum		:in std_logic_vector(15 downto 0);	--接收与发送总bit数（一次SPI工作过程中总时钟数）
 ----------------------------------------
+    m0_num          :in std_logic_vector(7 downto 0);
+    read_trigger    :in std_logic;
+    read_period     :in std_logic;
+    spi_state_cnt   :in std_logic_vector(15 downto 0);
+----------------------------------------
 	spi_rd_data		:out std_logic_vector(sdi_num*(rx_data_width+rx_addr_width)-1 downto 0);	
 	spi_rd_vld		:out std_logic;	
 ----------------------------------------
@@ -112,25 +117,6 @@ signal	spi_rd_data		:std_logic_vector((device_num+1)*(32+8)-1 downto 0);
 signal	spi_rd_vld		: std_logic;	
 signal	s_axis_trst		: std_logic;	
 
-component adc_7177_result_process is
-generic(
-    channel_num         : integer:=19;
-    rx_data_width       : integer:=32;
-    rx_addr_width       : integer:=8
-);
-Port(
-    clkin               : in std_logic;
-    rst_n               : in std_logic;
-    read_trigger        : in std_logic;
-    read_period         : in std_logic;
-    spi_state_cnt       : in std_logic_vector(15 downto 0);
-    ad7177_dout         : in std_logic_vector(channel_num-1 downto 0);
-    adc_result_data	    : out std_logic_vector(channel_num*(rx_data_width+rx_addr_width)-1 downto 0);
-    adc_result_valid    : out std_logic
-);
-end component;
-signal adc_result_data  : std_logic_vector((device_num+1)*(32+8)-1 downto 0);
-signal adc_result_valid : std_logic;
 
 constant wen_n:std_logic:='0';
 constant wr_en:std_logic:='0';
@@ -200,6 +186,11 @@ INS_SPI_DRV:SPI_MASTER_V1 PORT MAP(
     s_axis_trst	        =>  s_axis_trst	        ,
     s_axis_tnum		    =>  s_axis_tnum		    ,
     ----------------    =>  ----------------    ,
+    m0_num              =>  m0_num                  ,
+    read_trigger        =>  adc_data_read_trigger   ,
+    read_period         =>  adc_result_read_period  ,
+    spi_state_cnt       =>  spi_state_cnt           ,
+    ----------------    =>  ----------------    ,
     spi_rd_data		    =>  spi_rd_data		    ,
     spi_rd_vld		    =>  spi_rd_vld		    ,
     ----------------    =>  ----------------    ,
@@ -210,17 +201,6 @@ INS_SPI_DRV:SPI_MASTER_V1 PORT MAP(
     sdi(device_num)			  =>  audi_in			
 );
 
-adc_result_inst:adc_7177_result_process PORT MAP(
-    clkin               =>  clkin                   ,
-    rst_n               =>  rst_n                   ,
-    read_trigger        =>  adc_data_read_trigger   ,
-    read_period         =>  adc_result_read_period  ,
-    spi_state_cnt       =>  spi_state_cnt           ,
-    ad7177_dout(device_num-1 downto 0)      =>  spi_miso                ,
-    ad7177_dout(device_num)                 =>  audi_in                 ,
- 	adc_result_data	    =>  adc_result_data         ,
-	adc_result_valid    =>  adc_result_valid
-);
 
 -------------------------------------------------------------------
 
