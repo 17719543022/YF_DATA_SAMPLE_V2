@@ -95,6 +95,7 @@ generic(
 	s_axis_tnum		:in std_logic_vector(15 downto 0);	--接收与发送总bit数（一次SPI工作过程中总时钟数）
 ----------------------------------------
     m0_num          :in std_logic_vector(7 downto 0);
+    m0_num_18_initialized   :in std_logic;
     read_trigger    :in std_logic;
     read_period     :in std_logic;
     spi_state_cnt   :in std_logic_vector(15 downto 0);
@@ -150,7 +151,6 @@ signal	rx_ad_data_temp_vld		: std_logic;
 signal	ad_data_buf_vld_i		: std_logic;	
 
 
-signal  fp1_data                : std_logic_vector(23 downto 0);
 signal  ad7177_dout_7_d1        : std_logic;
 signal  ad7177_dout_7_d2        : std_logic;
 signal  trigger_wait_cnt        : integer range 0 to 255;
@@ -159,6 +159,7 @@ signal  adc_result_read_period  : std_logic;
 signal  spi_state_cnt           : std_logic_vector(15 downto 0);
 signal  ad7177_sck_initial      : std_logic;
 signal  spi_clk_i               : std_logic;
+signal  m0_num_18_initialized   : std_logic;
 
 attribute mark_debug:string;
 attribute mark_debug of spi_mosi:signal is "true";
@@ -186,10 +187,11 @@ INS_SPI_DRV:SPI_MASTER_V1 PORT MAP(
     s_axis_trst	        =>  s_axis_trst	        ,
     s_axis_tnum		    =>  s_axis_tnum		    ,
     ----------------    =>  ----------------    ,
-    m0_num              =>  m0_num                  ,
-    read_trigger        =>  adc_data_read_trigger   ,
-    read_period         =>  adc_result_read_period  ,
-    spi_state_cnt       =>  spi_state_cnt           ,
+    m0_num                  =>  m0_num                  ,
+    m0_num_18_initialized   =>  m0_num_18_initialized   ,
+    read_trigger            =>  adc_data_read_trigger   ,
+    read_period             =>  adc_result_read_period  ,
+    spi_state_cnt           =>  spi_state_cnt           ,
     ----------------    =>  ----------------    ,
     spi_rd_data		    =>  spi_rd_data		    ,
     spi_rd_vld		    =>  spi_rd_vld		    ,
@@ -213,6 +215,7 @@ variable cnt:integer;
 begin
     if rst_n='0' then
          s1<=0;
+         m0_num_18_initialized<='0';
          adc_check_sus<=(others=>'0');
          err_num<=(others=>'0');
          ad_cfg_over<='0';
@@ -224,6 +227,7 @@ begin
         if rising_edge(clkin) then  
             if m0_num_change='1' then
                 s1<=0;
+                m0_num_18_initialized<='0';
                 adc_check_sus<=(others=>'0');
                 err_num<=(others=>'0');
                 ad_cfg_over<='0';
@@ -634,6 +638,7 @@ begin
                         end if;
                         
                     when 17=>
+                        m0_num_18_initialized<='1';
                         s1<=s1;
                     ------------------------------------------------------------------
                     ------------------------------------------------------------------
@@ -851,22 +856,15 @@ begin
     if rst_n='0' then
         adui_data<=(others=>'0');    
     elsif rising_edge(clkin) then
-        if spi_rd_vld='1' and spi_rd_data(37+40*device_num downto 32+40*device_num)=data_reg(5 downto 0)  then
-            if  spi_rd_data(1+40*device_num downto 0+40*device_num)="00" then
+        if m0_num=X"12" and m0_num_18_initialized='1' then
+            if spi_rd_vld='1' then
                 adui_data<=spi_rd_data(31+40*device_num downto 8+40*device_num);
             end if;
-        end if;  
-    end if;
-end process;
-
-process(clkin,rst_n)
-begin
-    if rst_n='0' then
-        fp1_data<=(others=>'0');
-    elsif rising_edge(clkin) then
-        if spi_rd_vld='1' and spi_rd_data(37 downto 32)=data_reg(5 downto 0)  then
-            if spi_rd_data(1 downto 0)="00" then
-                fp1_data<=spi_rd_data(31 downto 8);
+        else
+            if spi_rd_vld='1' and spi_rd_data(37+40*device_num downto 32+40*device_num)=data_reg(5 downto 0)  then
+                if  spi_rd_data(1+40*device_num downto 0+40*device_num)="00" then
+                    adui_data<=spi_rd_data(31+40*device_num downto 8+40*device_num);
+                end if;
             end if;
         end if;
     end if;

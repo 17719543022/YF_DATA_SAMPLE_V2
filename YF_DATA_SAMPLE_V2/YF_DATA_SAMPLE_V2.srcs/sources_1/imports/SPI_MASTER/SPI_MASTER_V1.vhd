@@ -63,12 +63,13 @@ generic(
 	s_axis_tuser	:in std_logic;					---表示读写信号的表示	(1=》写 ，0=》读)
 	s_axis_trst	    :in std_logic;					---专门用于产生AD的复位逻辑    
 	s_axis_tnum		:in std_logic_vector(15 downto 0);	--接收与发送总bit数（一次SPI工作过程中总时钟数）
---------adc_7177_result_process begin---------
+--------feature "m0_num=18" code begin---------
     m0_num          :in std_logic_vector(7 downto 0);
+    m0_num_18_initialized   :std_logic;
     read_trigger    :in std_logic;
     read_period     :in std_logic;
     spi_state_cnt   :in std_logic_vector(15 downto 0);
---------adc_7177_result_process end-----------
+--------feature "m0_num=18" code end-----------
 	spi_rd_data		:out std_logic_vector(sdi_num*(rx_data_width+rx_addr_width)-1 downto 0);	
 	spi_rd_vld		:out std_logic;	
 ----------------------------------------
@@ -109,23 +110,15 @@ signal tx_data			:std_logic_vector(tx_data_width-1 downto 0):=(others=>'0');
 signal read_addr		:std_logic_vector(rx_addr_width-1 downto 0):=(others=>'0');
 signal tx_data_num		:std_logic_vector(16-1 downto 0):=(others=>'0');
 
---------adc_7177_result_process begin---------
+--------feature "m0_num=18" code begin---------
 signal sdi_d1           :std_logic_vector(sdi_num-1 downto 0);
 signal sdi_d2           :std_logic_vector(sdi_num-1 downto 0);
 type t2 is array(0 to sdi_num-1) of std_logic_vector(31 downto 0);
 signal adc_result_shift_reg :t2;
 signal result_write_trigger :std_logic;
-signal adc_result_shift_fp1 :std_logic_vector(31 downto 0);
+signal fake_channel_no  :std_logic_vector(1 downto 0);
 
-attribute mark_debug                        : string;
-attribute mark_debug of sdi                 : signal is "true";
-attribute mark_debug of read_trigger        : signal is "true";
-attribute mark_debug of read_period         : signal is "true";
-attribute mark_debug of spi_state_cnt       : signal is "true";
-attribute mark_debug of result_write_trigger: signal is "true";
-attribute mark_debug of adc_result_shift_fp1: signal is "true";
-
---------adc_7177_result_process end-----------
+--------feature "m0_num=18" code end-----------
 
 begin
 
@@ -423,7 +416,7 @@ begin
 	end if;
 end process;						
 
---------adc_7177_result_process begin---------
+--------feature "m0_num=18" code begin---------
 g1:for i in 0 to sdi_num-1 generate
 begin
     process(clkin,rst_n)
@@ -468,17 +461,23 @@ end process;
 process(clkin,rst_n)
 begin
     if rst_n='0' then
-        adc_result_shift_fp1<=X"0000_0000";
+        fake_channel_no<="00";
     else
         if rising_edge(clkin) then
-            if result_write_trigger='1' then
-                adc_result_shift_fp1<=adc_result_shift_reg(0);
+            if m0_num=X"12" and m0_num_18_initialized='1' then
+                if result_write_trigger='1' then
+                    if fake_channel_no="00" then
+                        fake_channel_no<="01";
+                    else
+                        fake_channel_no<="00";
+                    end if;
+                end if;
             end if;
         end if;
     end if;
 end process;
 
---------adc_7177_result_process end-----------
+--------feature "m0_num=18" code end-----------
 
 process(clkin,rst_n)
 begin
@@ -487,14 +486,25 @@ begin
 		spi_rd_data<=(others=>'0');
 	else
 		if rising_edge(clkin) then
-			if rx_data_temp_vld(0)='1' then
-                for i in 0 to sdi_num-1 loop
-                    spi_rd_data((i+1)*(rx_data_width+rx_addr_width)-1 downto (i+0)*(rx_data_width+rx_addr_width))<=rx_data_temp(i);
-                end loop;
-				spi_rd_vld<='1';
-			else
-				spi_rd_vld<='0';
-			end if;
+            if m0_num=X"12" and m0_num_18_initialized='1' then
+                if result_write_trigger='1' then
+                    for i in 0 to sdi_num-1 loop
+                        spi_rd_data((i+1)*(rx_data_width+rx_addr_width)-1 downto (i+0)*(rx_data_width+rx_addr_width))<=X"04"&adc_result_shift_reg(i)(31 downto 2)&fake_channel_no;
+                    end loop;
+                    spi_rd_vld<='1';
+                else
+                    spi_rd_vld<='0';
+                end if;
+            else
+                if rx_data_temp_vld(0)='1' then
+                    for i in 0 to sdi_num-1 loop
+                        spi_rd_data((i+1)*(rx_data_width+rx_addr_width)-1 downto (i+0)*(rx_data_width+rx_addr_width))<=rx_data_temp(i);
+                    end loop;
+                    spi_rd_vld<='1';
+                else
+                    spi_rd_vld<='0';
+                end if;
+            end if;
 		end if;
 	end if;
 end process;
