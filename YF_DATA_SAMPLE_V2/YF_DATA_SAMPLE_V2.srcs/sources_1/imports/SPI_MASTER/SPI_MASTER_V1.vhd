@@ -116,7 +116,6 @@ signal sdi_d2           :std_logic_vector(sdi_num-1 downto 0);
 type t2 is array(0 to sdi_num-1) of std_logic_vector(31 downto 0);
 signal adc_result_shift_reg :t2;
 signal result_write_trigger :std_logic;
-signal fake_channel_no  :std_logic_vector(1 downto 0);
 
 --------feature "m0_num=18" code end-----------
 
@@ -458,25 +457,6 @@ begin
     end if;
 end process;
 
-process(clkin,rst_n)
-begin
-    if rst_n='0' then
-        fake_channel_no<="00";
-    else
-        if rising_edge(clkin) then
-            if m0_num=X"12" and m0_num_18_initialized='1' then
-                if result_write_trigger='1' then
-                    if fake_channel_no="00" then
-                        fake_channel_no<="01";
-                    else
-                        fake_channel_no<="00";
-                    end if;
-                end if;
-            end if;
-        end if;
-    end if;
-end process;
-
 --------feature "m0_num=18" code end-----------
 
 process(clkin,rst_n)
@@ -489,7 +469,7 @@ begin
             if m0_num=X"12" and m0_num_18_initialized='1' then
                 if result_write_trigger='1' then
                     for i in 0 to sdi_num-1 loop
-                        spi_rd_data((i+1)*(rx_data_width+rx_addr_width)-1 downto (i+0)*(rx_data_width+rx_addr_width))<=X"04"&adc_result_shift_reg(i)(31 downto 2)&fake_channel_no;
+                        spi_rd_data((i+1)*(rx_data_width+rx_addr_width)-1 downto (i+0)*(rx_data_width+rx_addr_width))<=X"04"&adc_result_shift_reg(i)(31 downto 2)&"11";
                     end loop;
                     spi_rd_vld<='1';
                 else

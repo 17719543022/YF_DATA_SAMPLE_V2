@@ -844,6 +844,9 @@ begin
                 ad_data_buf(0+2*i)<=spi_rd_data(31+40*i downto 8+40*i);
             elsif spi_rd_data(1+40*i downto 0+40*i)="01" then
                 ad_data_buf(1+2*i)<=spi_rd_data(31+40*i downto 8+40*i);
+            elsif spi_rd_data(1+40*i downto 0+40*i)="11" then
+                ad_data_buf(0+2*i)<=spi_rd_data(31+40*i downto 8+40*i);
+                ad_data_buf(1+2*i)<=X"800000";
             end if;
         end if;  
     end if;
