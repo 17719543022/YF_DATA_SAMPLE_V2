@@ -46,10 +46,10 @@ generic(
 	tewh			:integer:=5;	--------两次CS启动的最小时间间隔（时间=（tewh+3）*clkin）
 -----------------------------------
 	tx_data_width	:integer:=24;
-	rx_data_width	:integer:=16;
+	rx_data_width	:integer:=32;
 	rx_addr_width	:integer:=8;
 --------------------------------
-    sdi_num         :integer:=18;
+    sdi_num         :integer:=19;
 --------------------------------
 	data_seq		:std_logic:='0'			------- 0=>MSB->LSB 1=>LSB->MSB
 );
@@ -63,7 +63,6 @@ generic(
 	s_axis_tuser	:in std_logic;					---表示读写信号的表示	(1=》写 ，0=》读)
 	s_axis_trst	    :in std_logic;					---专门用于产生AD的复位逻辑    
 	s_axis_tnum		:in std_logic_vector(15 downto 0);	--接收与发送总bit数（一次SPI工作过程中总时钟数）
-----------------------------------------
 --------feature "m0_num=18" code begin---------
     m0_num          :in std_logic_vector(7 downto 0);
     m0_num_18_initialized   :std_logic;
@@ -489,9 +488,6 @@ begin
 		end if;
 	end if;
 end process;
-
-
-
 
 
 

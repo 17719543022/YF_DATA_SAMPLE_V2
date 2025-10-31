@@ -45,7 +45,6 @@ generic(device_num:integer:=18);
     ad7177_sync     :out std_logic;
     audi_in         :in std_logic;
     adc_check_sus   :out std_logic_vector(device_num-1 downto 0);
-    sample_time_num :in std_logic_vector(31 downto 0);
     work_mod        :in std_logic_vector(7 downto 0);
     m0_num          :in std_logic_vector(7 downto 0);
     sample_start    :in std_logic;
@@ -63,8 +62,6 @@ generic(device_num:integer:=18);
 end ctrl_ad7177;
 
 architecture Behavioral of ctrl_ad7177 is
--- constant ad_sps:integer:=2*10**3;
--- constant sample_time_num:integer:=50*10**6/ad_sps;
 constant resv_data:std_logic_vector(39 downto 0):=X"0000_0000_00";
 constant spi_rd_cmd:std_logic:='0';
 constant spi_wr_cmd:std_logic:='1';
@@ -122,7 +119,6 @@ signal	spi_rd_vld		: std_logic;
 signal	s_axis_trst		: std_logic;	
 
 
-
 constant wen_n:std_logic:='0';
 constant wr_en:std_logic:='0';
 constant rd_en:std_logic:='1';
@@ -134,7 +130,6 @@ constant data_reg:std_logic_vector(7 downto 0):=X"04";
 
 
 signal	sample_en		: std_logic;	
--- signal	adc_check_sus   : std_logic_vector(device_num-1 downto 0);	
 signal m0_num_d                 : std_logic_vector(7 downto 0);
 signal m0_num_change            : std_logic;
 signal	ad_cfg_over		: std_logic;	
@@ -168,12 +163,15 @@ signal  m0_num_18_initialized   : std_logic;
 
 attribute mark_debug:string;
 attribute mark_debug of spi_mosi:signal is "true";
-attribute mark_debug of spi_cs_i:signal is "true";
+attribute mark_debug of spi_cs  :signal is "true";
 attribute mark_debug of spi_clk	:signal is "true";
-attribute mark_debug of spi_miso:signal is "true";
-attribute mark_debug of spi_rd_vld        :signal is "true";
-attribute mark_debug of spi_rd_data       :signal is "true";
 attribute mark_debug of s1                :signal is "true";
+attribute mark_debug of ad7177_dout_7_d1  :signal is "true";
+attribute mark_debug of ad7177_dout_7_d2  :signal is "true";
+attribute mark_debug of trigger_wait_cnt  :signal is "true";
+attribute mark_debug of ad7177_sck_initial:signal is "true";
+attribute mark_debug of cnt_cycle_ov      :signal is "true";
+attribute mark_debug of ad7177_sync       :signal is "true";
 
 
 begin
@@ -604,6 +602,36 @@ begin
 
                     ------------------------------------------------------------------
                     ------------------------------------------------------------------
+                    --when 6=>
+                    --    ad_data_buf_vld_i<='0';
+                    --    s1<=8;
+                    --
+                    --when 8=>
+                    --    if sample_en='1' then
+                    --        s1<=9;
+                    --        err_num<=spi_miso;
+                    --    end if;
+                    --
+                    --when 9=>
+                    --    s_axis_tnum<=conv_std_logic_vector(40,16);
+                    --    s_axis_tdata<=wen_n&rd_en&data_reg(5 downto 0)&resv_data(31 downto 0);  
+                    --    s_axis_tuser<=spi_rd_cmd;  
+                    --    if s_axis_tvalid='1' and s_axis_tready='1' then
+                    --        s1<=10;
+                    --        s_axis_tvalid<='0';
+                    --    else
+                    --        s1<=s1;
+                    --        s_axis_tvalid<='1';
+                    --    end if; 
+                    --    ad_data_buf_vld_i<='0';
+                    --
+                    --when 10=>
+                    --    if spi_rd_vld='1' then
+                    --        s1<=6;
+                    --        ad_data_buf_vld_i<='1';
+                    --    else
+                    --        s1<=s1;
+                    --    end if;
                     when 16=>
                         if cnt_cycle_ov='1' then
                             s1<=17;
@@ -658,12 +686,10 @@ end process;
 process(clkin,rst_n)
 begin
     if rst_n='0' then
-        ad7177_sync<='Z';
+        ad7177_sync<='0';
     else
         if rising_edge(clkin) then
-            if m0_num=X"24" then
-                ad7177_sync<='Z';
-            elsif cnt_cycle=X"000000C8" and s1=17 then
+            if cnt_cycle=X"000000C8" and s1=17 then
                 ad7177_sync<='1';
             elsif cnt_cycle=X"000003E8" and s1=17 then
                 ad7177_sync<='0';
