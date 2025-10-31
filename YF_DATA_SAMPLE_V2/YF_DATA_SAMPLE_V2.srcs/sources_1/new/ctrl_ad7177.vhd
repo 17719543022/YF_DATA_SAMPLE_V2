@@ -686,13 +686,19 @@ end process;
 process(clkin,rst_n)
 begin
     if rst_n='0' then
-        ad7177_sync<='0';
+        ad7177_sync<='Z';
     else
         if rising_edge(clkin) then
-            if cnt_cycle=X"000000C8" and s1=17 then
-                ad7177_sync<='1';
-            elsif cnt_cycle=X"000003E8" and s1=17 then
-                ad7177_sync<='0';
+            if m0_num=X"12" then
+                if s1=17 then
+                    if cnt_cycle=X"000000C8" then
+                        ad7177_sync<='1';
+                    elsif cnt_cycle=X"000003E8" then
+                        ad7177_sync<='0';
+                    end if;
+                else
+                    ad7177_sync<='0';
+                end if;
             end if;
         end if;
     end if;
