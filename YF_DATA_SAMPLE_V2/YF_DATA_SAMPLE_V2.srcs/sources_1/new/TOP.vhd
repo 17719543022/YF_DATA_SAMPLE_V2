@@ -232,6 +232,7 @@ generic(device_num:integer:=18);
 ----------------------------
     ad_channel_sta    :out std_logic_vector(35 downto 0);
 ---------------------------------
+    up_data_freq      :in std_logic_vector(31 downto 0);
     ad_channel_en     :in std_logic_vector(35 downto 0);
     work_mod          :in std_logic_vector(7 downto 0);
     m0_num            :in std_logic_vector(7 downto 0);
@@ -286,6 +287,7 @@ component usb_pro_deal is
     pwr_adc_data      :in std_logic_vector(15 downto 0);
     pwr_data_vld      :in std_logic;    
 -----------------ÅäÖÃÃüÁî----------------
+    up_data_freq_o    :out std_logic_vector(31 downto 0);
     ad_channel_en0    :out std_logic_vector(35 downto 0);
     work_mod          :out std_logic_vector(7 downto 0);
     m0_num            :out std_logic_vector(7 downto 0);
@@ -335,6 +337,7 @@ signal    ad_data_buf       :ad_buf_t;
 signal    ad_data_buf_vld   :std_logic;
 signal    ad_channel_sta    :std_logic_vector(35 downto 0);
 signal    seq_ver           :std_logic_vector(47 downto 0);
+signal    up_data_freq      :std_logic_vector(31 downto 0);
 signal    ad_channel_en     :std_logic_vector(35 downto 0);
 signal    work_mod          :std_logic_vector(7 downto 0);
 signal    m0_num            :std_logic_vector(7 downto 0);
@@ -530,6 +533,7 @@ ins_drv:drv_top port map(
     ---------------     =>  ---------------     ,
     ad_channel_sta     =>   ad_channel_sta      ,
     ------------------ =>   ------------------  ,
+    up_data_freq       =>   up_data_freq        ,
     ad_channel_en      =>   ad_channel_en       ,
     work_mod           =>   work_mod            ,
     m0_num             =>   m0_num              ,
@@ -577,6 +581,7 @@ ins_usb_pro_deal:usb_pro_deal port map(
     err_num                =>   err_num                  ,
     ad_channel_sta0        =>   ad_channel_sta           ,
     seq_ver                =>   seq_ver                  ,
+    up_data_freq_o         =>   up_data_freq             ,
     ad_channel_en0         =>   ad_channel_en            ,
     work_mod               =>   work_mod                 ,
     m0_num                 =>   m0_num                   ,

@@ -59,6 +59,7 @@ entity usb_pro_deal is
     pwr_adc_data      :in std_logic_vector(15 downto 0);
     pwr_data_vld      :in std_logic;
 -----------------配置命令----------------
+    up_data_freq_o    :out std_logic_vector(31 downto 0);
     ad_channel_en0    :out std_logic_vector(35 downto 0);
     work_mod          :out std_logic_vector(7 downto 0);
     m0_num            :out std_logic_vector(7 downto 0); --18导联36导联切换专用
@@ -180,10 +181,38 @@ signal ad_data_buf_r2: ad_buf_t:=(others=>X"020202");
 signal ad_data_buf_r3: ad_buf_t:=(others=>X"030303");
 
 attribute mark_debug:string;
-attribute mark_debug of ad_data_buf_vld  :signal is "true";
+attribute mark_debug of s_axis_tvalid  :signal is "true";
+attribute mark_debug of s_axis_tdata   :signal is "true";
+attribute mark_debug of m_axis_tvalid  :signal is "true";
+attribute mark_debug of m_axis_tready  :signal is "true";
+attribute mark_debug of m_axis_tdata   :signal is "true";
+attribute mark_debug of m_axis_tlast   :signal is "true";
+
+attribute mark_debug of usb_rx_buf_vld   :signal is "true";
+attribute mark_debug of usb_rx_buf_type  :signal is "true";
+attribute mark_debug of s2               :signal is "true";
+attribute mark_debug of cnt_tx           :signal is "true";
 attribute mark_debug of lock_data_en     :signal is "true";
+attribute mark_debug of door_bell_cmd    :signal is "true";
+attribute mark_debug of ad_data_buf_vld  :signal is "true";
 
 
+COMPONENT ila_0
+
+PORT (
+	clk : IN STD_LOGIC;
+
+
+
+	probe0 : IN STD_LOGIC_VECTOR(23 DOWNTO 0); 
+	probe1 : IN STD_LOGIC_VECTOR(23 DOWNTO 0); 
+	probe2 : IN STD_LOGIC_VECTOR(23 DOWNTO 0); 
+	probe3 : IN STD_LOGIC_VECTOR(23 DOWNTO 0); 
+	probe4 : IN STD_LOGIC_VECTOR(23 DOWNTO 0); 
+	probe5 : IN STD_LOGIC_VECTOR(23 DOWNTO 0);
+	probe6 : IN STD_LOGIC
+);
+END COMPONENT  ;
 
 signal ad_data_23:std_logic_vector(23 downto 0);
 
@@ -409,6 +438,8 @@ work_mod      <=work_mod_i;
 m0_num        <=m0_num_t;
 rst_n_usb     <=rst_n;
 
+up_data_freq_o<=up_data_freq;
+
 rst_n_ad<=rst_n_ad_i;
 
 process(clkin,rst_n)
@@ -445,10 +476,8 @@ begin
             
             if usb_rx_buf(11)=X"24" then
                 m0_num_t(7 downto 0)<=usb_rx_buf(11);
-            
             elsif usb_rx_buf(11)=X"12" then
                 m0_num_t(7 downto 0)<=usb_rx_buf(11);
-            
             else
                 m0_num_t(7 downto 0)<=m0_num_t(7 downto 0);
             end if;
@@ -712,6 +741,20 @@ lock_data_en_pos<=lock_data_en and not lock_data_en_d1;
 
 
 -----------------数据上传回复/自检回复------------------------------------------------------------------
+uut : ila_0
+PORT MAP (
+	clk    => clkin,
+	probe0 => adui_data,
+	probe1 => m1_adui_data_out,
+	probe2 => m2_adui_data_out,
+	probe3 => m3_adui_data_out,
+	probe4 => ad_data_buf(21),
+	probe5 => ad_data_buf_r1(21),
+	probe6 => ad_data_buf_vld
+);
+
+
+
 process(clkin,rst_n)
 begin
     if rising_edge(clkin) then
@@ -904,24 +947,24 @@ begin
                     m_axis_tlast<='1';
                     s2<=0;    
 --------------------------------电源管理状态上传-------------------------------------------------------------------
---                 when 5=>
---                    m_axis_tdata(7 downto 0)<=usb_pwrma_buf(cnt_tx);
---                    m_axis_tdata(15 downto 8)<=usb_pwrma_buf(cnt_tx+1);
---                    sum_data<=sum_data+usb_pwrma_buf(cnt_tx)+usb_pwrma_buf(cnt_tx+1);
---                    m_axis_tvalid<='1';
---                    if cnt_tx>=6 then    
---                        s2<=6;
---                        cnt_tx<=0;
---                    else
---                        cnt_tx<=cnt_tx+2;
---                    end if;
---                    
---                when 6=>                ---发送校验位与帧尾
---                    m_axis_tdata(7 downto 0)<=sum_data;
---                    m_axis_tdata(15 downto 8)<=usb_pwrma_buf(9);                    
---                    m_axis_tvalid<='1';
---                    m_axis_tlast<='1';
---                    s2<=0;       
+                 when 5=>
+                    m_axis_tdata(7 downto 0)<=usb_pwrma_buf(cnt_tx);
+                    m_axis_tdata(15 downto 8)<=usb_pwrma_buf(cnt_tx+1);
+                    sum_data<=sum_data+usb_pwrma_buf(cnt_tx)+usb_pwrma_buf(cnt_tx+1);
+                    m_axis_tvalid<='1';
+                    if cnt_tx>=6 then    
+                        s2<=6;
+                        cnt_tx<=0;
+                    else
+                        cnt_tx<=cnt_tx+2;
+                    end if;
+                    
+                when 6=>                ---发送校验位与帧尾
+                    m_axis_tdata(7 downto 0)<=sum_data;
+                    m_axis_tdata(15 downto 8)<=usb_pwrma_buf(9);                    
+                    m_axis_tvalid<='1';
+                    m_axis_tlast<='1';
+                    s2<=0;       
                     
                 
                 when others=>
