@@ -699,6 +699,8 @@ begin
                 else
                     ad7177_sync<='0';
                 end if;
+            else
+                ad7177_sync<='Z';
             end if;
         end if;
     end if;
