@@ -171,7 +171,6 @@ attribute mark_debug of ad7177_dout_7_d2  :signal is "true";
 attribute mark_debug of trigger_wait_cnt  :signal is "true";
 attribute mark_debug of ad7177_sck_initial:signal is "true";
 attribute mark_debug of cnt_cycle_ov      :signal is "true";
-attribute mark_debug of ad7177_sync       :signal is "true";
 
 
 begin
